@@ -4,13 +4,18 @@
 
 ## 项目结构
 
-- `src/agent.py` — Agent 封装，调用 SDK `query()` API，通过 `setting_sources=["project","local"]` 自动加载 Skills
-- `src/task_runner.py` — 任务运行器，读取配置 → 构建 slash command → 调用 Agent → 保存日志
-- `src/cli.py` — CLI 入口，提供 `run`/`list`/`skills`/`schedule` 子命令
-- `src/windows_task.py` — Windows 任务计划程序集成
-- `.claude/skills/` — Claude Code Skill 定义目录
-- `config/tasks.yaml` — 任务配置（Skill 引用 + 参数 + 时间表）
-- `docs/guide.md` — 开发指南
+```
+src/
+  cli.py                      # CLI 入口，提供 run/list/skills/schedule 子命令
+  core/
+    agent.py                  # Agent 封装，调用 SDK query() API
+    runner.py                 # 任务运行器，读取配置 → 构建 slash command → 调用 Agent → 保存日志
+  scheduler/
+    windows.py                # Windows 任务计划程序集成
+.claude/skills/               # Claude Code Skill 定义目录
+config/tasks.yaml             # 任务配置（Skill 引用 + 参数 + 时间表）
+docs/guide.md                 # 开发指南
+```
 
 ## 开发命令
 
@@ -19,12 +24,13 @@
 .venv/Scripts/pip install -e .
 
 # 语法检查
-.venv/Scripts/python -m py_compile src/agent.py
-.venv/Scripts/python -m py_compile src/task_runner.py
+.venv/Scripts/python -m py_compile src/core/agent.py
+.venv/Scripts/python -m py_compile src/core/runner.py
+.venv/Scripts/python -m py_compile src/scheduler/windows.py
 .venv/Scripts/python -m py_compile src/cli.py
 
 # 验证导入
-.venv/Scripts/python -c "from src.agent import Agent; from src.task_runner import TaskRunner; print('OK')"
+.venv/Scripts/python -c "from src.core.agent import Agent; from src.core.runner import TaskRunner; print('OK')"
 
 # CLI 测试
 .venv/Scripts/python -m src.cli skills

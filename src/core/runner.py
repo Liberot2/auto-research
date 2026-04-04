@@ -6,7 +6,6 @@
 """
 
 import logging
-import re
 import traceback
 from datetime import datetime
 from pathlib import Path
@@ -14,7 +13,7 @@ from typing import Any
 
 import yaml
 
-from src.agent import Agent, AgentResponse
+from src.core.agent import Agent, AgentResponse
 
 logger = logging.getLogger(__name__)
 
@@ -94,48 +93,6 @@ def _build_slash_command(skill_name: str, params: dict[str, Any]) -> str:
     return cmd_name
 
 
-def _discover_skills(skills_dir: Path = Path(".claude/skills")) -> dict[str, dict[str, Any]]:
-    """扫描 .claude/skills/ 目录，发现所有可用的 Skill
-
-    返回 {skill_name: {description, dir}} 的映射。
-    """
-    skills = {}
-    if not skills_dir.exists():
-        return skills
-
-    for item in sorted(skills_dir.iterdir()):
-        if not item.is_dir() or item.name.startswith("_") or item.name.startswith("."):
-            continue
-        skill_md = item / "SKILL.md"
-        if not skill_md.exists():
-            continue
-
-        # 从 frontmatter 提取基本信息
-        description = ""
-        try:
-            content = skill_md.read_text(encoding="utf-8")
-            match = re.match(r"^---\s*\n(.*?)\n---", content, re.DOTALL)
-            if match:
-                frontmatter = yaml.safe_load(match.group(1)) or {}
-                name = frontmatter.get("name", item.name)
-                desc = frontmatter.get("description", "")
-                if isinstance(desc, dict):
-                    desc = str(desc)
-                description = desc
-            else:
-                name = item.name
-        except Exception:
-            logger.debug("解析 SKILL.md 失败，使用目录名: %s", item.name)
-            name = item.name
-
-        skills[name] = {
-            "description": description,
-            "dir": str(item),
-        }
-
-    return skills
-
-
 class TaskRunner:
     """基于 Claude Code Skill 的任务运行器"""
 
@@ -188,7 +145,7 @@ class TaskRunner:
             logger.info("Slash command: %s", prompt)
 
             # 创建 Agent 并执行
-            agent = Agent(max_turns=10)
+            agent = Agent(max_turns=task_config.get("max_turns", 10))
             response = await agent.run(prompt)
 
             # 保存结果日志
@@ -245,13 +202,15 @@ class TaskRunner:
             })
         return tasks
 
-    def list_skills(self) -> list[dict[str, Any]]:
+    def list_skills(self) -> list[dict[str, str]]:
         """列出所有可用的 Claude Code Skills"""
-        skills = _discover_skills()
+        skills_dir = Path(".claude/skills")
+        if not skills_dir.exists():
+            return []
         return [
-            {
-                "name": name,
-                "description": info["description"][:80] if info["description"] else "",
-            }
-            for name, info in skills.items()
+            {"name": d.name}
+            for d in sorted(skills_dir.iterdir())
+            if d.is_dir()
+            and (d / "SKILL.md").exists()
+            and not d.name.startswith(("_", "."))
         ]

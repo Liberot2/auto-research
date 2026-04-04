@@ -15,8 +15,8 @@ project_root = str(Path(__file__).parent.parent)
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-from src.task_runner import TaskRunner
-from src.windows_task import (
+from src.core.runner import TaskRunner
+from src.scheduler.windows import (
     TASK_FOLDER,
     create_task_xml,
     delete_task,
@@ -83,7 +83,7 @@ def list_available_skills(config_path: str) -> None:
         return
 
     for skill in skills:
-        print(f"  /{skill['name'].replace('_', '-')} - {skill['description']}")
+        print(f"  /{skill['name']}")
 
 
 def setup_windows_task(task_name: str, schedule: str, config_path: str) -> None:

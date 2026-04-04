@@ -16,11 +16,11 @@ paths:
 
 | 类型 | 风格 | 示例 |
 |------|------|------|
-| 文件/模块 | `snake_case` | `task_runner.py` |
+| 文件/模块 | `snake_case` | `runner.py`, `windows.py` |
 | 类 | `PascalCase` | `TaskRunner`, `AgentResponse` |
 | 函数/方法 | `snake_case` | `run_task()`, `load_config()` |
 | 私有函数 | `_` 前缀 | `_build_slash_command()` |
-| 常量 | `UPPER_SNAKE_CASE` | `MAX_RETRIES` |
+| 常量 | `UPPER_SNAKE_CASE` | `TASK_FOLDER` |
 
 ## 导入顺序
 
@@ -35,7 +35,9 @@ import yaml
 from claude_agent_sdk import query, ClaudeAgentOptions
 
 # 3. 项目内部
-from src.agent import Agent, AgentResponse
+from src.core.agent import Agent, AgentResponse
+from src.core.runner import TaskRunner
+from src.scheduler.windows import create_task_xml
 ```
 
 ## 文档字符串

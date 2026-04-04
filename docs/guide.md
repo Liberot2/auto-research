@@ -16,10 +16,12 @@ auto-research/
 ├── config/
 │   └── tasks.yaml               # 任务配置：关联 Skill + 定时参数
 ├── src/
-│   ├── agent.py                 # Agent 封装（Claude Agent SDK query()）
-│   ├── task_runner.py           # 任务运行器（构建 slash command → 调用 Agent）
 │   ├── cli.py                   # CLI 入口
-│   └── windows_task.py          # Windows 任务计划程序集成
+│   ├── core/
+│   │   ├── agent.py             # Agent 封装（Claude Agent SDK query()）
+│   │   └── runner.py            # 任务运行器（构建 slash command → 调用 Agent）
+│   └── scheduler/
+│       └── windows.py           # Windows 任务计划程序集成
 ├── logs/                        # 执行日志输出目录
 └── .venv/                       # Python 虚拟环境
 ```
@@ -92,7 +94,7 @@ tasks:
 - `skill` 字段：对应 `.claude/skills/` 下的目录名（下划线 `_` 会自动转为连字符 `-` 以匹配 slash command 格式）
 - `parameters`：在执行时会被拼接到 slash command 中，如 `keywords=[LLM,agent] max_papers=5`
 
-#### 3. Agent (src/agent.py)
+#### 3. Agent (src/core/agent.py)
 
 对 `claude_agent_sdk` 的 `query()` API 的封装，核心配置：
 
@@ -102,7 +104,7 @@ tasks:
 | `permission_mode` | `"bypassPermissions"` | 无人值守模式，自动批准所有工具调用 |
 | `max_turns` | `10` | 最大对话轮次 |
 
-#### 4. TaskRunner (src/task_runner.py)
+#### 4. TaskRunner (src/core/runner.py)
 
 任务执行引擎，职责：
 
@@ -111,7 +113,7 @@ tasks:
 3. 创建 Agent 并执行
 4. 将结果日志写入 `logs/` 目录
 
-#### 5. Windows 任务计划 (src/windows_task.py)
+#### 5. Windows 任务计划 (src/scheduler/windows.py)
 
 通过 `schtasks` 命令将 Python CLI 注册为 Windows 系统定时任务。支持的计划格式：
 

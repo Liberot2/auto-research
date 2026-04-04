@@ -22,17 +22,7 @@ def _get_python_path() -> str:
 
 def _get_script_path() -> str:
     """获取 CLI 入口脚本路径"""
-    return str(Path(__file__).parent / "cli.py")
-
-
-def _escape_xml(text: str) -> str:
-    """转义 XML 特殊字符"""
-    return (
-        text.replace("&", "&amp;")
-        .replace("<", "&lt;")
-        .replace(">", "&gt;")
-        .replace('"', "&quot;")
-    )
+    return str(Path(__file__).parent.parent / "cli.py")
 
 
 def create_task_xml(
