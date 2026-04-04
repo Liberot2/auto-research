@@ -1,0 +1,55 @@
+# Auto Research 定时任务配置
+#
+# 每个 task 引用一个 .claude/skills/ 下的 Skill 并提供参数:
+#   tasks:
+#     <任务名称>:
+#       skill: <.claude/skills/ 下的 skill 名称>
+#       schedule: Windows 计划表达式 (如 "daily 09:00")
+#       enabled: 是否启用
+#       parameters: 传递给 slash command 的参数
+
+log_dir: logs
+
+tasks:
+  # ArXiv 论文追踪
+  morning_papers:
+    skill: arxiv_tracker
+    description: "追踪 ArXiv 最新论文"
+    schedule: "daily 08:00"
+    enabled: false
+    parameters:
+      keywords:
+        - "large language model"
+        - "agent"
+        - "reinforcement learning"
+      max_papers: 5
+
+  # 网页监控
+  site_monitor:
+    skill: web_monitor
+    description: "监控指定网页内容变化"
+    schedule: "daily 09:00"
+    enabled: false
+    parameters:
+      urls:
+        - "https://arxiv.org/list/cs.AI/recent"
+        - "https://news.ycombinator.com"
+
+  # 每日摘要
+  daily_report:
+    skill: daily_summary
+    description: "生成每日项目工作摘要"
+    schedule: "daily 18:00"
+    enabled: false
+    parameters:
+      target_dir: "."
+
+  # GitHub Agent 趋势追踪
+  github_agent_trend:
+    skill: github_agent_trend
+    description: "抓取 GitHub Trending 中 Agent 相关项目并提取核心亮点"
+    schedule: "daily 09:00"
+    enabled: false
+    parameters:
+      topic: "agent"
+      max_repos: 10

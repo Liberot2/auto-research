@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__web-reader__webReader",
+      "mcp__web-search-prime__web_search_prime",
+      "mcp__zread__get_repo_structure",
+      "mcp__zread__search_doc",
+      "Bash(python:*)",
+      "Bash(.venv/Scripts/python:*)",
+      "Bash(.venv/Scripts/pip:*)",
+      "Bash(pip install:*)",
+      "WebSearch",
+      "Bash(forfiles /S /M *.py /D +0 /C \"cmd /c echo @fpath @fdate @ftime\")"
+    ]
+  }
+}
