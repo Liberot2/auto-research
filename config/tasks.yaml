@@ -4,7 +4,6 @@
 #   tasks:
 #     <任务名称>:
 #       skill: <.claude/skills/ 下的 skill 名称>
-#       schedule: Windows 计划表达式 (如 "daily 09:00")
 #       enabled: 是否启用
 #       parameters: 传递给 slash command 的参数
 
@@ -15,8 +14,8 @@ tasks:
   morning_papers:
     skill: arxiv_tracker
     description: "追踪 ArXiv 最新论文"
-    schedule: "daily 08:00"
-    enabled: false
+    enabled: true
+    max_turns: 20
     parameters:
       keywords:
         - "large language model"
@@ -28,8 +27,8 @@ tasks:
   site_monitor:
     skill: web_monitor
     description: "监控指定网页内容变化"
-    schedule: "daily 09:00"
-    enabled: false
+    enabled: true
+    max_turns: 20
     parameters:
       urls:
         - "https://arxiv.org/list/cs.AI/recent"
@@ -39,8 +38,8 @@ tasks:
   daily_report:
     skill: daily_summary
     description: "生成每日项目工作摘要"
-    schedule: "daily 18:00"
-    enabled: false
+    enabled: true
+    max_turns: 20
     parameters:
       target_dir: "."
 
@@ -48,8 +47,8 @@ tasks:
   github_agent_trend:
     skill: github_agent_trend
     description: "抓取 GitHub Trending 中 Agent 相关项目并提取核心亮点"
-    schedule: "daily 09:00"
-    enabled: false
+    enabled: true
+    max_turns: 20
     parameters:
       topic: "agent"
       max_repos: 10

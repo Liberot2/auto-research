@@ -55,7 +55,6 @@ tasks:
   <task_name>:                    # 自定义任务名
     skill: <skill_name>           # .claude/skills/ 下的目录名
     description: "任务描述"
-    schedule: "daily HH:MM"       # 时间表
     max_turns: 10                 # 可选，Agent 最大轮次，默认 10
     enabled: true/false
     parameters:                   # 传递给 slash command 的参数

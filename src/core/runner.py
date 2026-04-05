@@ -28,8 +28,10 @@ class TaskContext:
         self.timestamp = datetime.now()
 
     def get_log_path(self, suffix: str = ".log") -> Path:
-        filename = f"{self.task_name}_{self.timestamp.strftime('%Y%m%d_%H%M%S')}{suffix}"
-        return self.log_dir / filename
+        date_dir = self.log_dir / self.timestamp.strftime("%Y-%m-%d")
+        date_dir.mkdir(parents=True, exist_ok=True)
+        filename = f"{self.task_name}_{self.timestamp.strftime('%H%M%S')}{suffix}"
+        return date_dir / filename
 
 
 class TaskResult:
@@ -197,7 +199,6 @@ class TaskRunner:
                 "name": name,
                 "skill": skill_name,
                 "description": config.get("description", ""),
-                "schedule": config.get("schedule", ""),
                 "enabled": config.get("enabled", True),
             })
         return tasks

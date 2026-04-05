@@ -326,13 +326,16 @@ Skill 的 Workflow 中可以使用 Claude 的所有内置能力：
 
 ## 日志
 
-每次任务执行会在 `logs/` 目录下生成日志文件：
+每次任务执行会在 `logs/<YYYY-MM-DD>/` 目录下生成日志文件：
 
 ```
 logs/
-├── morning_papers_20260404_080000.txt
-├── site_monitor_20260404_090000.txt
-└── daily_report_20260404_180000.txt
+├── 2026-04-04/
+│   ├── morning_papers_080000.txt
+│   └── site_monitor_090000.txt
+├── 2026-04-05/
+│   ├── morning_papers_080000.txt
+│   └── daily_report_180000.txt
 ```
 
 日志内容包括：任务名称、Skill 名称、执行时间、费用、耗时、轮次数、prompt 和完整输出结果。

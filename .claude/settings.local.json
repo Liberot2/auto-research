@@ -10,7 +10,11 @@
       "Bash(.venv/Scripts/pip:*)",
       "Bash(pip install:*)",
       "WebSearch",
-      "Bash(forfiles /S /M *.py /D +0 /C \"cmd /c echo @fpath @fdate @ftime\")"
+      "Bash(forfiles /S /M *.py /D +0 /C \"cmd /c echo @fpath @fdate @ftime\")",
+      "Bash(ls -la /e/workspace/auto-research/.claude/skills/*/)",
+      "Bash(schtasks /query /fo csv /v)",
+      "Bash(schtasks /query /tn \"AutoResearch\\\\\\\\morning_papers\" /fo csv /v)",
+      "Bash(powershell -Command \"schtasks /query /fo csv /v\")"
     ]
   }
 }

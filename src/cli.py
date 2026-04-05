@@ -41,7 +41,7 @@ async def run_single(task_name: str, config_path: str) -> None:
     runner.load_config()
 
     result = await runner.run_task(task_name)
-    print(json.dumps(result.to_dict(), ensure_ascii=False, indent=2))
+    print(json.dumps(result.to_dict(), ensure_ascii=True, indent=2))
 
 
 async def run_all_tasks(config_path: str) -> None:
@@ -51,7 +51,7 @@ async def run_all_tasks(config_path: str) -> None:
 
     results = await runner.run_all()
     for r in results:
-        print(json.dumps(r.to_dict(), ensure_ascii=False, indent=2))
+        print(json.dumps(r.to_dict(), ensure_ascii=True, indent=2))
 
 
 def list_configured_tasks(config_path: str) -> None:
@@ -67,8 +67,6 @@ def list_configured_tasks(config_path: str) -> None:
     for task in tasks:
         enabled = "启用" if task["enabled"] else "禁用"
         print(f"  {task['name']} [{enabled}] skill={task['skill']} - {task['description']}")
-        if task["schedule"]:
-            print(f"    计划: {task['schedule']}")
 
 
 def list_available_skills(config_path: str) -> None:
