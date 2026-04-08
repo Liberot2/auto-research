@@ -113,7 +113,10 @@ class TaskRunner:
             config = yaml.safe_load(f) or {}
 
         self.tasks_config = config.get("tasks", {})
-        self.log_dir = Path(config.get("log_dir", "logs"))
+        log_dir = config.get("log_dir", "logs")
+        self.log_dir = Path(log_dir)
+        if not self.log_dir.is_absolute():
+            self.log_dir = self.config_path.parent / log_dir
         self.log_dir.mkdir(parents=True, exist_ok=True)
 
         logger.info("加载了 %d 个任务配置", len(self.tasks_config))

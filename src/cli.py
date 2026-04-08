@@ -86,7 +86,8 @@ def list_available_skills(config_path: str) -> None:
 
 def setup_windows_task(task_name: str, schedule: str, config_path: str) -> None:
     """设置 Windows 定时任务"""
-    python_args = f"run {task_name} --config {config_path}"
+    abs_config = str(Path(config_path).resolve())
+    python_args = f"--config {abs_config} run {task_name}"
 
     xml_content = create_task_xml(
         task_name=f"auto_research_{task_name}",
