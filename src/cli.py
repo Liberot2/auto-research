@@ -24,6 +24,14 @@ from src.scheduler.windows import (
     register_task_from_xml,
 )
 
+_DEBUG_LOG = Path(__file__).parent.parent / "logs" / "scheduler_debug.txt"
+
+
+def _debug(msg: str) -> None:
+    from datetime import datetime
+    with open(_DEBUG_LOG, "a", encoding="utf-8") as f:
+        f.write(f"[{datetime.now().isoformat()}] {msg}\n")
+
 
 def setup_logging(verbose: bool = False) -> None:
     """配置日志"""
@@ -37,10 +45,13 @@ def setup_logging(verbose: bool = False) -> None:
 
 async def run_single(task_name: str, config_path: str) -> None:
     """运行单个任务"""
+    _debug(f"run_single: task={task_name}, config={config_path}")
     runner = TaskRunner(config_path=config_path)
     runner.load_config()
+    _debug(f"run_single: loaded {len(runner.tasks_config)} tasks, log_dir={runner.log_dir}")
 
     result = await runner.run_task(task_name)
+    _debug(f"run_single: result success={result.success}, error={result.error}")
     print(json.dumps(result.to_dict(), ensure_ascii=True, indent=2))
 
 
@@ -128,6 +139,19 @@ def list_windows_tasks() -> None:
 
 
 def main() -> None:
+    # Debug log for scheduled tasks
+    from datetime import datetime
+    import os
+    debug_path = Path(__file__).parent.parent / "logs" / "scheduler_debug.txt"
+    debug_path.parent.mkdir(parents=True, exist_ok=True)
+    env_dump_path = debug_path.parent / "last_env.txt"
+    with open(env_dump_path, "w", encoding="utf-8") as f:
+        for key in sorted(os.environ):
+            f.write(f"{key}={os.environ[key]}\n")
+    with open(debug_path, "a", encoding="utf-8") as f:
+        f.write(f"[{datetime.now().isoformat()}] cli.py started, cwd={Path.cwd()}, args={sys.argv}\n")
+        f.write(f"  env dump saved to {env_dump_path}\n")
+
     parser = argparse.ArgumentParser(
         prog="auto-research",
         description="基于 Claude Agent SDK 的定时任务框架 (Skill 架构)",

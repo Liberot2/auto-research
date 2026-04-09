@@ -150,7 +150,11 @@ class TaskRunner:
             logger.info("Slash command: %s", prompt)
 
             # 创建 Agent 并执行
-            agent = Agent(max_turns=task_config.get("max_turns", 10))
+            project_dir = str(self.config_path.parent.parent.resolve())
+            agent = Agent(
+                max_turns=task_config.get("max_turns", 10),
+                cwd=project_dir,
+            )
             response = await agent.run(prompt)
 
             # 保存结果日志
@@ -176,6 +180,15 @@ class TaskRunner:
         except Exception:
             error_msg = traceback.format_exc()
             logger.error("任务 %s 执行失败: %s", task_name, error_msg)
+            # Log captured stderr for debugging
+            if Agent._stderr_log:
+                stderr_path = context.get_log_path("_stderr.txt")
+                stderr_path.write_text(
+                    "\n".join(Agent._stderr_log),
+                    encoding="utf-8",
+                )
+                logger.error("SDK stderr 已保存到: %s", stderr_path)
+                Agent._stderr_log.clear()
             return TaskResult(
                 task_name=task_name,
                 success=False,

@@ -21,6 +21,7 @@ tasks:
         - "large language model"
         - "agent"
         - "reinforcement learning"
+        - "agent application"
       max_papers: 5
 
   # 网页监控

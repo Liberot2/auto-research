@@ -5,6 +5,7 @@
 通过 slash command 触发对应 Skill 执行。
 """
 
+import json
 import logging
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -20,6 +21,28 @@ from claude_agent_sdk import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+def _load_settings_env() -> dict[str, str]:
+    """从 ~/.claude/settings.json 的 env 字段加载环境变量
+
+    交互式会话中 Claude Code 会自动注入这些变量，
+    但 Windows 定时任务环境不会，需要手动加载。
+    """
+    settings_path = Path.home() / ".claude" / "settings.json"
+    if not settings_path.exists():
+        return {}
+
+    try:
+        with open(settings_path, encoding="utf-8") as f:
+            settings = json.load(f)
+        env_vars = settings.get("env", {})
+        if env_vars:
+            logger.info("Loaded %d env vars from settings.json", len(env_vars))
+        return env_vars
+    except Exception:
+        logger.warning("Failed to load settings.json")
+        return {}
 
 
 @dataclass
@@ -43,6 +66,8 @@ class Agent:
     使用 bypassPermissions 模式实现无人值守执行。
     """
 
+    _stderr_log: list[str] = []
+
     def __init__(
         self,
         max_turns: int = 10,
@@ -55,12 +80,20 @@ class Agent:
         self.cwd = cwd
         self.max_budget_usd = max_budget_usd
 
+    @classmethod
+    def _capture_stderr(cls, line: str) -> None:
+        """捕获 SDK 子进程的 stderr 输出"""
+        logger.warning("SDK stderr: %s", line)
+        cls._stderr_log.append(line)
+
     def _build_options(self) -> ClaudeAgentOptions:
         """构建 SDK 查询选项"""
         kwargs: dict[str, Any] = {
             "max_turns": self.max_turns,
             "permission_mode": "bypassPermissions",
             "setting_sources": ["project", "local"],
+            "stderr": self._capture_stderr,
+            "env": _load_settings_env(),
         }
 
         if self.model:
