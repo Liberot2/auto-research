@@ -16,13 +16,15 @@ Monitor websites for accessibility and content changes.
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `urls` | array | `[]` | List of URLs to monitor |
+| `report_path` | string | _(auto)_ | Report save path, injected by runner |
 
 ## Workflow
 
 1. **Validate**: For each URL in `urls`, verify accessibility using WebSearch or by attempting to fetch the page content.
 2. **Summarize**: For accessible pages, extract and summarize key content (headings, main topics, recent updates).
-3. **Compare**: If previous monitoring data exists in `logs/reports/`, highlight notable changes.
+3. **Compare**: If previous monitoring data exists (check previous day's `_report.md` in the same date-based log directory), highlight notable changes.
 4. **Report**: Generate a monitoring report with status for each URL.
+5. **Save**: Save the report to the file path specified by `report_path`.
 
 ## Output Format
 

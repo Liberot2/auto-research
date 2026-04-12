@@ -17,6 +17,7 @@ Generate daily work summaries from project directory analysis.
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `target_dir` | string | `.` | Project directory to analyze |
+| `report_path` | string | _(auto)_ | Report save path, injected by runner |
 
 ## Workflow
 
@@ -25,6 +26,7 @@ Generate daily work summaries from project directory analysis.
 3. **Recent files**: Use `git status` or check file modification times to find recently changed files.
 4. **Analyze changes**: Read key changed files to understand what was modified and why.
 5. **Generate report**: Create a structured daily summary.
+6. **Save**: Save the report to the file path specified by `report_path`.
 
 ## Output Format
 

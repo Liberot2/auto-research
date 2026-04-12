@@ -144,6 +144,7 @@ class TaskRunner:
             params["timestamp"] = context.timestamp.strftime("%Y-%m-%d %H:%M:%S")
             params["date"] = context.timestamp.strftime("%Y-%m-%d")
             params["task_name"] = task_name
+            params["report_path"] = str(context.get_log_path("_report.md"))
 
             # 构建 slash command prompt
             prompt = _build_slash_command(skill_name, params)

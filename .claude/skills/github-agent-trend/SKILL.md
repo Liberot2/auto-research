@@ -22,6 +22,7 @@ Fetch GitHub Trending projects filtered by topic, extract core innovations and g
 | `topic` | string | `"agent"` | Topic keyword to filter trending repositories |
 | `max_repos` | integer | `10` | Maximum number of repositories to include in report |
 | `language` | string | `""` | Programming language filter (empty string = all languages) |
+| `report_path` | string | _(auto)_ | Report save path, injected by runner |
 
 ## Workflow
 
@@ -50,6 +51,7 @@ Fetch GitHub Trending projects filtered by topic, extract core innovations and g
    - Notable features: Standout capabilities or design choices
 
 5. **Report**: Generate a structured markdown report in Chinese with the following sections:
+   - Save the report to the file path specified by `report_path`.
    - Executive summary (overview of trends observed)
    - Project highlights (one section per repo with structured info)
    - Trend analysis (common patterns, emerging directions)

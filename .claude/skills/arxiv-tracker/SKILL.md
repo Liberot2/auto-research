@@ -18,6 +18,7 @@ Track and summarize latest academic papers on specified research topics.
 |-----------|------|---------|-------------|
 | `keywords` | array | `["large language model"]` | Search keywords for paper discovery |
 | `max_papers` | integer | `5` | Maximum number of papers to include |
+| `report_path` | string | _(auto)_ | Report save path, injected by runner |
 
 ## Workflow
 
@@ -26,6 +27,7 @@ Track and summarize latest academic papers on specified research topics.
 3. **Extract**: For each paper, extract: title (original English), authors, submission date, core contribution (2-3 sentences), key methods/techniques.
 4. **Analyze**: Identify common themes, emerging trends, and methodological patterns across papers.
 5. **Report**: Generate a structured markdown report following the template at `assets/report-template.md`.
+6. **Save**: Save the report to the file path specified by `report_path`.
 
 ## Output Language
 
