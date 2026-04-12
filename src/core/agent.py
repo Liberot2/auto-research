@@ -1,14 +1,12 @@
 """
 核心 Agent 模块 - 封装 Claude Agent SDK 的 query() API
 
-使用 setting_sources=["project", "local"] 自动加载 .claude/skills/ 目录，
-通过 slash command 触发对应 Skill 执行。
+使用 setting_sources=["project", "local"] 自动加载 .claude/skills/ 目录
+和 ~/.claude/settings.json 中的环境变量，通过 slash command 触发对应 Skill 执行。
 """
 
-import json
 import logging
 from dataclasses import dataclass, field
-from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -22,30 +20,6 @@ from claude_agent_sdk import (
 )
 
 logger = logging.getLogger(__name__)
-
-
-@lru_cache(maxsize=1)
-def _load_settings_env() -> dict[str, str]:
-    """从 ~/.claude/settings.json 的 env 字段加载环境变量
-
-    交互式会话中 Claude Code 会自动注入这些变量，
-    但 Windows 定时任务环境不会，需要手动加载。
-    使用 lru_cache 避免每次 Agent 实例都读取文件。
-    """
-    settings_path = Path.home() / ".claude" / "settings.json"
-    if not settings_path.exists():
-        return {}
-
-    try:
-        with open(settings_path, encoding="utf-8") as f:
-            settings = json.load(f)
-        env_vars = settings.get("env", {})
-        if env_vars:
-            logger.info("Loaded %d env vars from settings.json", len(env_vars))
-        return env_vars
-    except Exception:
-        logger.warning("Failed to load settings.json")
-        return {}
 
 
 @dataclass
@@ -65,7 +39,9 @@ class AgentResponse:
 class Agent:
     """基于 Claude Agent SDK 的 Agent 封装
 
-    通过 setting_sources 加载 .claude/skills/ 目录，
+    通过 setting_sources=["project", "local"] 自动加载：
+    - 项目级 .claude/settings.json（Skills 等）
+    - 用户级 ~/.claude/settings.json（env 环境变量、认证等）
     使用 bypassPermissions 模式实现无人值守执行。
     """
 
@@ -94,7 +70,6 @@ class Agent:
             "permission_mode": "bypassPermissions",
             "setting_sources": ["project", "local"],
             "stderr": self._capture_stderr,
-            "env": _load_settings_env(),
         }
 
         if self.model:
