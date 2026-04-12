@@ -8,6 +8,7 @@
 import json
 import logging
 from dataclasses import dataclass, field
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -23,11 +24,13 @@ from claude_agent_sdk import (
 logger = logging.getLogger(__name__)
 
 
+@lru_cache(maxsize=1)
 def _load_settings_env() -> dict[str, str]:
     """从 ~/.claude/settings.json 的 env 字段加载环境变量
 
     交互式会话中 Claude Code 会自动注入这些变量，
     但 Windows 定时任务环境不会，需要手动加载。
+    使用 lru_cache 避免每次 Agent 实例都读取文件。
     """
     settings_path = Path.home() / ".claude" / "settings.json"
     if not settings_path.exists():
@@ -66,8 +69,6 @@ class Agent:
     使用 bypassPermissions 模式实现无人值守执行。
     """
 
-    _stderr_log: list[str] = []
-
     def __init__(
         self,
         max_turns: int = 10,
@@ -79,12 +80,12 @@ class Agent:
         self.model = model
         self.cwd = cwd
         self.max_budget_usd = max_budget_usd
+        self.stderr_log: list[str] = []
 
-    @classmethod
-    def _capture_stderr(cls, line: str) -> None:
+    def _capture_stderr(self, line: str) -> None:
         """捕获 SDK 子进程的 stderr 输出"""
-        logger.warning("SDK stderr: %s", line)
-        cls._stderr_log.append(line)
+        logger.debug("SDK stderr: %s", line)
+        self.stderr_log.append(line)
 
     def _build_options(self) -> ClaudeAgentOptions:
         """构建 SDK 查询选项"""
@@ -115,7 +116,7 @@ class Agent:
         options = self._build_options()
         text_parts: list[str] = []
 
-        logger.info("Agent 开始执行, prompt: %s", prompt[:100])
+        logger.info("Agent query started, prompt: %s", prompt[:100])
 
         async for message in query(prompt=prompt, options=options):
             if isinstance(message, AssistantMessage):
@@ -128,7 +129,7 @@ class Agent:
                             "input": block.input,
                             "id": block.id,
                         })
-                        logger.debug("工具调用: %s", block.name)
+                        logger.debug("Tool call: %s", block.name)
 
             elif isinstance(message, ResultMessage):
                 response.total_cost_usd = message.total_cost_usd or 0.0
@@ -145,7 +146,7 @@ class Agent:
                     response.structured_output = message.structured_output
 
         logger.info(
-            "Agent 执行完成, turns=%d, cost=%.4f, duration=%dms",
+            "Agent query done, turns=%d, cost=%.4f, duration=%dms",
             response.num_turns,
             response.total_cost_usd,
             response.duration_ms,

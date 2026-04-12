@@ -7,7 +7,9 @@ import argparse
 import asyncio
 import json
 import logging
+import os
 import sys
+from datetime import datetime
 from pathlib import Path
 
 # 确保项目根目录在 sys.path 中
@@ -28,7 +30,8 @@ _DEBUG_LOG = Path(__file__).parent.parent / "logs" / "scheduler_debug.txt"
 
 
 def _debug(msg: str) -> None:
-    from datetime import datetime
+    """写入调试日志（用于排查定时任务问题）"""
+    _DEBUG_LOG.parent.mkdir(parents=True, exist_ok=True)
     with open(_DEBUG_LOG, "a", encoding="utf-8") as f:
         f.write(f"[{datetime.now().isoformat()}] {msg}\n")
 
@@ -138,19 +141,17 @@ def list_windows_tasks() -> None:
         print(f"  {task['name']} - 状态: {task['status']} - 下次运行: {task['next_run']}")
 
 
-def main() -> None:
-    # Debug log for scheduled tasks
-    from datetime import datetime
-    import os
-    debug_path = Path(__file__).parent.parent / "logs" / "scheduler_debug.txt"
-    debug_path.parent.mkdir(parents=True, exist_ok=True)
-    env_dump_path = debug_path.parent / "last_env.txt"
+def _log_startup_env() -> None:
+    """记录启动信息到调试日志（用于排查定时任务环境问题）"""
+    env_dump_path = _DEBUG_LOG.parent / "last_env.txt"
     with open(env_dump_path, "w", encoding="utf-8") as f:
         for key in sorted(os.environ):
             f.write(f"{key}={os.environ[key]}\n")
-    with open(debug_path, "a", encoding="utf-8") as f:
-        f.write(f"[{datetime.now().isoformat()}] cli.py started, cwd={Path.cwd()}, args={sys.argv}\n")
-        f.write(f"  env dump saved to {env_dump_path}\n")
+    _debug(f"cli.py started, cwd={Path.cwd()}, args={sys.argv}")
+
+
+def main() -> None:
+    _log_startup_env()
 
     parser = argparse.ArgumentParser(
         prog="auto-research",

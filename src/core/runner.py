@@ -181,14 +181,13 @@ class TaskRunner:
             error_msg = traceback.format_exc()
             logger.error("任务 %s 执行失败: %s", task_name, error_msg)
             # Log captured stderr for debugging
-            if Agent._stderr_log:
+            if agent.stderr_log:
                 stderr_path = context.get_log_path("_stderr.txt")
                 stderr_path.write_text(
-                    "\n".join(Agent._stderr_log),
+                    "\n".join(agent.stderr_log),
                     encoding="utf-8",
                 )
-                logger.error("SDK stderr 已保存到: %s", stderr_path)
-                Agent._stderr_log.clear()
+                logger.error("SDK stderr saved to: %s", stderr_path)
             return TaskResult(
                 task_name=task_name,
                 success=False,
@@ -221,7 +220,7 @@ class TaskRunner:
 
     def list_skills(self) -> list[dict[str, str]]:
         """列出所有可用的 Claude Code Skills"""
-        skills_dir = Path(".claude/skills")
+        skills_dir = self.config_path.parent.parent / ".claude" / "skills"
         if not skills_dir.exists():
             return []
         return [
