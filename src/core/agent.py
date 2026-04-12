@@ -1,12 +1,16 @@
 """
 核心 Agent 模块 - 封装 Claude Agent SDK 的 query() API
 
-使用 setting_sources=["project", "local"] 自动加载 .claude/skills/ 目录
-和 ~/.claude/settings.json 中的环境变量，通过 slash command 触发对应 Skill 执行。
+使用 setting_sources=["project", "local"] 自动加载 .claude/skills/ 目录，
+通过 slash command 触发对应 Skill 执行。
+注意：settings.json 中的 env 字段需要通过 ClaudeAgentOptions.env 显式传递，
+setting_sources 不会自动将 env 注入到子进程环境中。
 """
 
+import json
 import logging
 from dataclasses import dataclass, field
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -20,6 +24,30 @@ from claude_agent_sdk import (
 )
 
 logger = logging.getLogger(__name__)
+
+
+@lru_cache(maxsize=1)
+def _load_settings_env() -> dict[str, str]:
+    """从 ~/.claude/settings.json 的 env 字段加载环境变量
+
+    setting_sources 会加载 settings 文件用于配置，
+    但不会将 env 字段注入到 SDK 子进程的环境中。
+    需要通过 ClaudeAgentOptions.env 显式传递。
+    """
+    settings_path = Path.home() / ".claude" / "settings.json"
+    if not settings_path.exists():
+        return {}
+
+    try:
+        with open(settings_path, encoding="utf-8") as f:
+            settings = json.load(f)
+        env_vars = settings.get("env", {})
+        if env_vars:
+            logger.info("Loaded %d env vars from settings.json", len(env_vars))
+        return env_vars
+    except Exception:
+        logger.warning("Failed to load settings.json")
+        return {}
 
 
 @dataclass
@@ -70,6 +98,7 @@ class Agent:
             "permission_mode": "bypassPermissions",
             "setting_sources": ["project", "local"],
             "stderr": self._capture_stderr,
+            "env": _load_settings_env(),
         }
 
         if self.model:
