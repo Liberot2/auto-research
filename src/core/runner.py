@@ -201,8 +201,19 @@ class TaskRunner:
             )
         except Exception:
             error_msg = traceback.format_exc()
-            logger.error("任务 %s 执行失败: %s", task_name, error_msg)
-            # Log captured stderr for debugging
+            logger.error("Task %s failed: %s", task_name, error_msg)
+            # Always write execution log, even on failure
+            log_path = context.get_log_path(".txt")
+            log_path.write_text(
+                f"Task: {task_name}\n"
+                f"Skill: {skill_name}\n"
+                f"Time: {context.timestamp.isoformat()}\n"
+                f"Success: False\n"
+                f"\n--- Prompt ---\n{prompt}\n"
+                f"\n--- Error ---\n{error_msg}\n",
+                encoding="utf-8",
+            )
+            # Save captured stderr for debugging
             if agent.stderr_log:
                 stderr_path = context.get_log_path("_stderr.txt")
                 stderr_path.write_text(
