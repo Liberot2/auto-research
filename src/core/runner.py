@@ -5,6 +5,7 @@
 不需要自定义 SkillLoader，SDK 的 setting_sources 会自动发现 Skills。
 """
 
+import asyncio
 import logging
 import traceback
 from datetime import datetime
@@ -121,8 +122,8 @@ class TaskRunner:
 
         logger.info("加载了 %d 个任务配置", len(self.tasks_config))
 
-    async def run_task(self, task_name: str) -> TaskResult:
-        """执行指定任务"""
+    async def run_task(self, task_name: str, max_retries: int = 1) -> TaskResult:
+        """执行指定任务，失败后自动重试"""
         if task_name not in self.tasks_config:
             raise ValueError(f"未找到任务配置: {task_name}")
 
@@ -130,6 +131,26 @@ class TaskRunner:
         skill_name = task_config.get("skill")
         if not skill_name:
             raise ValueError(f"任务 '{task_name}' 缺少 skill 字段")
+
+        last_result: TaskResult | None = None
+        for attempt in range(max_retries + 1):
+            result = await self._execute_task(task_name, task_config, skill_name)
+            if result.success:
+                return result
+            last_result = result
+            if attempt < max_retries:
+                logger.warning(
+                    "Task %s failed (attempt %d/%d), retrying in 30s...",
+                    task_name, attempt + 1, max_retries + 1,
+                )
+                await asyncio.sleep(30)
+
+        return last_result  # type: ignore[return-value]
+
+    async def _execute_task(
+        self, task_name: str, task_config: dict[str, Any], skill_name: str
+    ) -> TaskResult:
+        """单次执行任务"""
 
         context = TaskContext(
             task_name=task_name,
