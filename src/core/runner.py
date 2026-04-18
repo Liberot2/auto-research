@@ -22,16 +22,24 @@ logger = logging.getLogger(__name__)
 class TaskContext:
     """任务执行上下文"""
 
-    def __init__(self, task_name: str, config: dict[str, Any], log_dir: Path):
+    def __init__(self, task_name: str, config: dict[str, Any], log_dir: Path, report_dir: Path):
         self.task_name = task_name
         self.config = config
         self.log_dir = log_dir
+        self.report_dir = report_dir
         self.timestamp = datetime.now()
 
     def get_log_path(self, suffix: str = ".log") -> Path:
         date_dir = self.log_dir / self.timestamp.strftime("%Y-%m-%d")
         date_dir.mkdir(parents=True, exist_ok=True)
         filename = f"{self.task_name}_{self.timestamp.strftime('%H%M%S')}{suffix}"
+        return date_dir / filename
+
+    def get_report_path(self) -> Path:
+        """获取报告输出路径（独立于日志目录）"""
+        date_dir = self.report_dir / self.timestamp.strftime("%Y-%m-%d")
+        date_dir.mkdir(parents=True, exist_ok=True)
+        filename = f"{self.task_name}_{self.timestamp.strftime('%H%M%S')}_report.md"
         return date_dir / filename
 
 
@@ -103,6 +111,7 @@ class TaskRunner:
         self.config_path = Path(config_path)
         self.tasks_config: dict[str, dict[str, Any]] = {}
         self.log_dir = Path("logs")
+        self.report_dir = Path("reports")
 
     def load_config(self) -> None:
         """从 YAML 加载任务配置"""
@@ -119,6 +128,12 @@ class TaskRunner:
         if not self.log_dir.is_absolute():
             self.log_dir = self.config_path.parent.parent / log_dir
         self.log_dir.mkdir(parents=True, exist_ok=True)
+
+        report_dir = config.get("report_dir", "reports")
+        self.report_dir = Path(report_dir)
+        if not self.report_dir.is_absolute():
+            self.report_dir = self.config_path.parent.parent / report_dir
+        self.report_dir.mkdir(parents=True, exist_ok=True)
 
         logger.info("加载了 %d 个任务配置", len(self.tasks_config))
 
@@ -156,6 +171,7 @@ class TaskRunner:
             task_name=task_name,
             config=task_config,
             log_dir=self.log_dir,
+            report_dir=self.report_dir,
         )
 
         logger.info("开始执行任务: %s (skill: %s)", task_name, skill_name)
@@ -165,7 +181,7 @@ class TaskRunner:
             params["timestamp"] = context.timestamp.strftime("%Y-%m-%d %H:%M:%S")
             params["date"] = context.timestamp.strftime("%Y-%m-%d")
             params["task_name"] = task_name
-            params["report_path"] = str(context.get_log_path("_report.md"))
+            params["report_path"] = str(context.get_report_path())
 
             # 构建 slash command prompt
             prompt = _build_slash_command(skill_name, params)

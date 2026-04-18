@@ -177,6 +177,18 @@ def main() -> None:
     # skills 命令
     subparsers.add_parser("skills", help="列出所有可用的 Skills")
 
+    # serve 命令
+    serve_parser = subparsers.add_parser("serve", help="Start report viewer web server")
+    serve_parser.add_argument(
+        "--host", default="127.0.0.1", help="Bind address (default: 127.0.0.1)"
+    )
+    serve_parser.add_argument(
+        "--port", type=int, default=8000, help="Port number (default: 8000)"
+    )
+    serve_parser.add_argument(
+        "--report-dir", default="reports", help="Report directory (default: reports)"
+    )
+
     # schedule 命令组
     sched_parser = subparsers.add_parser("schedule", help="管理 Windows 定时任务")
     sched_sub = sched_parser.add_subparsers(dest="sched_action", help="调度操作")
@@ -209,6 +221,14 @@ def main() -> None:
 
     elif args.command == "skills":
         list_available_skills(args.config)
+
+    elif args.command == "serve":
+        from src.web import run_server
+
+        report_dir = Path(args.report_dir)
+        if not report_dir.is_absolute():
+            report_dir = Path.cwd() / report_dir
+        run_server(report_dir=report_dir, host=args.host, port=args.port)
 
     elif args.command == "schedule":
         if args.sched_action == "add":

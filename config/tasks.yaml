@@ -8,6 +8,7 @@
 #       parameters: 传递给 slash command 的参数
 
 log_dir: logs
+report_dir: reports
 
 tasks:
   # ArXiv 论文追踪
@@ -15,7 +16,7 @@ tasks:
     skill: arxiv_tracker
     description: "追踪 ArXiv 最新论文"
     enabled: true
-    max_turns: 20
+    max_turns: 100
     parameters:
       keywords:
         - "large language model"
@@ -29,7 +30,7 @@ tasks:
     skill: web_monitor
     description: "监控指定网页内容变化"
     enabled: true
-    max_turns: 20
+    max_turns: 100
     parameters:
       urls:
         - "https://arxiv.org/list/cs.AI/recent"
@@ -40,7 +41,7 @@ tasks:
     skill: daily_summary
     description: "生成每日项目工作摘要"
     enabled: true
-    max_turns: 20
+    max_turns: 100
     parameters:
       target_dir: "."
 
@@ -49,7 +50,7 @@ tasks:
     skill: github_agent_trend
     description: "抓取 GitHub Trending 中 Agent 相关项目并提取核心亮点"
     enabled: true
-    max_turns: 20
+    max_turns: 100
     parameters:
       topic: "agent"
       max_repos: 10
