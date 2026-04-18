@@ -1,3 +1,8 @@
+---
+paths:
+  - ".claude/skills/*.md"
+---
+
 # Skill 开发规范
 
 ## Skill 目录结构
