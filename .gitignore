@@ -35,6 +35,10 @@ ENV/
 logs/
 *.log
 
+# Generated data
+reports/
+data/
+
 # Local config
 config/windows_tasks/
 .env
