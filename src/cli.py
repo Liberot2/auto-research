@@ -228,7 +228,15 @@ def main() -> None:
         report_dir = Path(args.report_dir)
         if not report_dir.is_absolute():
             report_dir = Path.cwd() / report_dir
-        run_server(report_dir=report_dir, host=args.host, port=args.port)
+        config_path = Path(args.config)
+        if not config_path.is_absolute():
+            config_path = Path.cwd() / config_path
+        run_server(
+            report_dir=report_dir,
+            config_path=config_path,
+            host=args.host,
+            port=args.port,
+        )
 
     elif args.command == "schedule":
         if args.sched_action == "add":

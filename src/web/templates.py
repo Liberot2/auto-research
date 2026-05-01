@@ -207,6 +207,13 @@ a:hover { text-decoration: underline; }
     font-size: 13px;
     color: var(--muted);
 }
+.card-actions {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-shrink: 0;
+    align-self: center;
+}
 
 /* Task type colors */
 .badge {
@@ -222,12 +229,20 @@ a:hover { text-decoration: underline; }
 .badge-daily_report { background: #d1fae5; color: #065f46; }
 .badge-github_agent_trend { background: #ede9fe; color: #5b21b6; }
 .badge-default { background: var(--accent-light); color: var(--accent); }
+.badge-enabled { background: #d1fae5; color: #065f46; }
+.badge-disabled { background: #fee2e2; color: #991b1b; }
+.badge-success { background: #d1fae5; color: #065f46; }
+.badge-failed { background: #fee2e2; color: #991b1b; }
 
 :root[data-theme='dark'] .badge-morning_papers { background: #78350f; color: #fde68a; }
 :root[data-theme='dark'] .badge-site_monitor { background: #1e3a5f; color: #93c5fd; }
 :root[data-theme='dark'] .badge-daily_report { background: #064e3b; color: #6ee7b7; }
 :root[data-theme='dark'] .badge-github_agent_trend { background: #4c1d95; color: #c4b5fd; }
 :root[data-theme='dark'] .badge-default { background: var(--accent-light); color: var(--accent); }
+:root[data-theme='dark'] .badge-enabled { background: #064e3b; color: #6ee7b7; }
+:root[data-theme='dark'] .badge-disabled { background: #7f1d1d; color: #fca5a5; }
+:root[data-theme='dark'] .badge-success { background: #064e3b; color: #6ee7b7; }
+:root[data-theme='dark'] .badge-failed { background: #7f1d1d; color: #fca5a5; }
 
 /* Search bar */
 .search-bar {
@@ -398,20 +413,485 @@ a:hover { text-decoration: underline; }
     color: var(--muted);
 }
 .empty-state p { font-size: 16px; }
+
+/* Action bar (download/bookmark on report page) */
+.action-bar {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 16px;
+}
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+    text-decoration: none;
+}
+.action-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    text-decoration: none;
+}
+
+/* Run button */
+.run-btn {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 16px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    transition: background 0.15s, opacity 0.15s;
+}
+.run-btn:hover { background: var(--accent-hover); }
+.run-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.run-btn.running { background: var(--orange); }
+
+/* Toggle button */
+.toggle-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 14px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: border-color 0.15s;
+}
+.toggle-btn:hover { border-color: var(--accent); }
+
+/* Compare view */
+.compare-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 20px;
+}
+.compare-pane {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    overflow-x: auto;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+.compare-pane h3 {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+}
+.diff-add { background: #d1fae5; }
+.diff-remove { background: #fee2e2; }
+.diff-context { background: transparent; }
+:root[data-theme='dark'] .diff-add { background: #064e3b; }
+:root[data-theme='dark'] .diff-remove { background: #7f1d1d; }
+.diff-line {
+    font-family: "Cascadia Code", "Fira Code", "Consolas", monospace;
+    font-size: 12px;
+    line-height: 1.6;
+    padding: 1px 8px;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+/* Bookmark star */
+.bookmark-star {
+    cursor: pointer;
+    font-size: 18px;
+    color: var(--muted);
+    transition: color 0.15s;
+    background: none;
+    border: none;
+    padding: 4px;
+}
+.bookmark-star.active { color: #f59e0b; }
+.bookmark-star:hover { color: #f59e0b; }
+
+/* Ask / semantic search */
+.ask-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+.ask-input-wrap {
+    position: relative;
+    margin-bottom: 24px;
+}
+.ask-input-wrap textarea {
+    width: 100%;
+    min-height: 80px;
+    padding: 14px 18px;
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 15px;
+    background: var(--surface);
+    color: var(--text);
+    resize: vertical;
+    box-shadow: var(--shadow-sm);
+    transition: border-color 0.15s, box-shadow 0.15s;
+    font-family: inherit;
+    line-height: 1.5;
+}
+.ask-input-wrap textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-light);
+}
+.ask-submit {
+    margin-top: 10px;
+    padding: 10px 28px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background 0.15s, opacity 0.15s;
+}
+.ask-submit:hover { background: var(--accent-hover); }
+.ask-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+.ask-error {
+    background: #fee2e2;
+    color: #991b1b;
+    padding: 12px 16px;
+    border-radius: var(--radius);
+    margin-bottom: 16px;
+    font-size: 14px;
+}
+:root[data-theme='dark'] .ask-error { background: #7f1d1d; color: #fca5a5; }
+.ask-result-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin-bottom: 12px;
+    box-shadow: var(--shadow-sm);
+    transition: border-color 0.15s;
+}
+.ask-result-card:hover { border-color: var(--accent); }
+.ask-result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+.ask-result-title {
+    font-size: 15px;
+    font-weight: 600;
+}
+.ask-result-title a { color: var(--text); }
+.ask-result-title a:hover { color: var(--accent); text-decoration: none; }
+.relevance-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    background: var(--accent-light);
+    color: var(--accent);
+    white-space: nowrap;
+}
+.ask-reasoning {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+    padding: 8px 12px;
+    background: var(--bg);
+    border-radius: 6px;
+    line-height: 1.5;
+}
+.ask-snippets {
+    margin-top: 8px;
+}
+.ask-snippet {
+    font-size: 13px;
+    color: var(--text-secondary);
+    padding: 6px 10px;
+    margin-bottom: 4px;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-light);
+    border-radius: 0 4px 4px 0;
+}
+.ask-snippet-title {
+    font-weight: 600;
+    color: var(--text);
+    font-size: 12px;
+    margin-bottom: 2px;
+}
+.ask-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    color: var(--muted);
+}
+.ask-status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+}
+.ask-status-dot.active { background: var(--green); }
+.ask-status-dot.inactive { background: var(--red); }
+.ask-loading {
+    text-align: center;
+    padding: 40px;
+    color: var(--muted);
+}
+
+/* Log viewer */
+.log-header {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+}
+.log-stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 12px 16px;
+    text-align: center;
+}
+.log-stat .label { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+.log-stat .value { font-size: 18px; font-weight: 600; }
+.log-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin-bottom: 16px;
+}
+.log-section-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+}
+.log-section pre {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 14px;
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+/* Config block */
+.config-grid {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 8px 16px;
+    font-size: 14px;
+}
+.config-key { font-weight: 600; color: var(--muted); }
+.config-val { color: var(--text); }
+
+/* History table */
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+.history-table th, .history-table td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+}
+.history-table th {
+    font-weight: 600;
+    color: var(--muted);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.history-table tr:hover { background: var(--accent-light); }
+
+/* Compare form */
+.compare-form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+.compare-col h3 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+.compare-col select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 13px;
+    background: var(--surface);
+    color: var(--text);
+    margin-bottom: 8px;
+}
 """
 
 _JS = """
 <script>
-(function() {{
+(function() {
     var t = localStorage.getItem('report-theme') || 'light';
     document.documentElement.setAttribute('data-theme', t);
-}})();
-function toggleTheme() {{
+})();
+function toggleTheme() {
     var cur = document.documentElement.getAttribute('data-theme');
     var next = cur === 'dark' ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', next);
     localStorage.setItem('report-theme', next);
-}}
+}
+async function runTask(taskName, btn) {
+    btn.disabled = true;
+    var orig = btn.textContent;
+    btn.textContent = 'Running...';
+    btn.classList.add('running');
+    try {
+        var resp = await fetch('/api/tasks/' + taskName + '/run', {method: 'POST'});
+        var data = await resp.json();
+        if (data.error) {
+            alert('Error: ' + data.error);
+        } else {
+            alert('Task "' + taskName + '" started');
+        }
+    } catch(e) {
+        alert('Request failed: ' + e.message);
+    }
+    btn.disabled = false;
+    btn.textContent = orig;
+    btn.classList.remove('running');
+}
+async function toggleTask(taskName) {
+    try {
+        var resp = await fetch('/api/tasks/' + taskName + '/toggle', {method: 'POST'});
+        var data = await resp.json();
+        location.reload();
+    } catch(e) {
+        alert('Toggle failed: ' + e.message);
+    }
+}
+async function toggleBookmark(date, filename, starEl) {
+    var isBookmarked = starEl.classList.contains('active');
+    var method = isBookmarked ? 'DELETE' : 'POST';
+    try {
+        var resp = await fetch('/api/bookmarks', {
+            method: method,
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({date: date, filename: filename})
+        });
+        if (resp.ok) {
+            starEl.classList.toggle('active');
+            starEl.textContent = isBookmarked ? '\\u2606' : '\\u2605';
+        }
+    } catch(e) {}
+}
+async function askQuery(btn) {
+    var input = document.getElementById('ask-input');
+    var resultsDiv = document.getElementById('ask-results');
+    var query = input.value.trim();
+    if (!query) return;
+    btn.disabled = true;
+    btn.textContent = 'Thinking...';
+    resultsDiv.innerHTML = '<div class="ask-loading">Searching reports...</div>';
+    try {
+        var resp = await fetch('/api/ask', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({query: query})
+        });
+        var data = await resp.json();
+        if (data.error) {
+            resultsDiv.innerHTML = '<div class="ask-error">' + data.error + '</div>';
+        } else {
+            renderAskResults(data.results, resultsDiv);
+        }
+    } catch(e) {
+        resultsDiv.innerHTML = '<div class="ask-error">Request failed: ' + e.message + '</div>';
+    }
+    btn.disabled = false;
+    btn.textContent = 'Ask';
+}
+function renderAskResults(results, container) {
+    if (!results.length) {
+        container.innerHTML = '<div class="empty-state"><p>No relevant reports found</p></div>';
+        return;
+    }
+    var html = '';
+    for (var i = 0; i < results.length; i++) {
+        var r = results[i];
+        var pct = Math.round(r.relevance * 100);
+        html += '<div class="ask-result-card">';
+        html += '<div class="ask-result-header">';
+        html += '<div class="ask-result-title"><a href="/report/' + r.date + '/' + r.filename + '">' + r.task_name + ' - ' + r.display_time + '</a></div>';
+        html += '<span class="relevance-badge">' + pct + '% match</span>';
+        html += '</div>';
+        html += '<div class="card-meta"><span class="badge ' + badgeClass(r.task_name) + '">' + r.task_name + '</span> &middot; ' + r.date + '</div>';
+        if (r.reasoning) {
+            html += '<div class="ask-reasoning">' + escHtml(r.reasoning) + '</div>';
+        }
+        if (r.sections && r.sections.length) {
+            html += '<div class="ask-snippets">';
+            for (var j = 0; j < r.sections.length; j++) {
+                var s = r.sections[j];
+                html += '<div class="ask-snippet">';
+                html += '<div class="ask-snippet-title">' + escHtml(s.title) + '</div>';
+                html += escHtml(s.snippet);
+                html += '</div>';
+            }
+            html += '</div>';
+        }
+        html += '</div>';
+    }
+    container.innerHTML = html;
+}
+function badgeClass(name) {
+    var map = {'morning_papers':'badge-morning_papers','site_monitor':'badge-site_monitor','daily_report':'badge-daily_report','github_agent_trend':'badge-github_agent_trend'};
+    return map[name] || 'badge-default';
+}
+function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+async function generateDescriptions(btn) {
+    btn.disabled = true;
+    btn.textContent = 'Generating...';
+    var resultEl = document.getElementById('gen-result');
+    resultEl.textContent = '';
+    try {
+        var resp = await fetch('/api/generate-descriptions', {method: 'POST'});
+        var data = await resp.json();
+        if (data.error) {
+            resultEl.textContent = 'Error: ' + data.error;
+        } else {
+            resultEl.textContent = 'Generated ' + data.generated + ' descriptions';
+            btn.remove();
+        }
+    } catch(e) {
+        resultEl.textContent = 'Failed: ' + e.message;
+    }
+    btn.disabled = false;
+    btn.textContent = 'Generate Descriptions';
+}
 </script>
 """
 
@@ -428,6 +908,17 @@ _BADGE_CLASSES: dict[str, str] = {
     "daily_report": "badge-daily_report",
     "github_agent_trend": "badge-github_agent_trend",
 }
+
+
+def _esc(text: str) -> str:
+    """HTML-escape text for safe rendering"""
+    return (
+        str(text)
+        .replace("&", "&amp;")
+        .replace("<", "&lt;")
+        .replace(">", "&gt;")
+        .replace('"', "&quot;")
+    )
 
 
 def _task_icon(task_name: str) -> tuple[str, str]:
@@ -458,6 +949,7 @@ def _sidebar(
     dates: list[str],
     active_date: str = "",
     date_counts: dict[str, int] | None = None,
+    active_nav: str = "",
 ) -> str:
     date_counts = date_counts or {}
     items = []
@@ -467,11 +959,28 @@ def _sidebar(
         count_html = f'<span class="count">{cnt}</span>' if cnt else ""
         items.append(f'<li><a href="/date/{d}"{cls}>{d}{count_html}</a></li>')
     date_list = "\n".join(items) if items else "<li>No dates</li>"
+
+    nav_items = [
+        ("tasks", "Task Manager", "/tasks"),
+        ("compare", "Compare", "/compare"),
+        ("bookmarks", "Bookmarks", "/bookmarks"),
+        ("ask", "Semantic Search", "/ask"),
+    ]
+    nav_links = []
+    for key, label, href in nav_items:
+        cls = ' class="active"' if key == active_nav else ""
+        nav_links.append(f'<li><a href="{href}"{cls}>{label}</a></li>')
+    nav_html = "\n".join(nav_links)
+
     return f"""
 <div class="sidebar">
     <div class="sidebar-brand">
         <h1>Report Viewer</h1>
         <p>Auto Research Reports</p>
+    </div>
+    <div class="sidebar-section">
+        <div class="sidebar-section-title">Navigation</div>
+        <ul>{nav_html}</ul>
     </div>
     <div class="sidebar-section">
         <div class="sidebar-section-title">Dates</div>
@@ -483,9 +992,22 @@ def _sidebar(
 </div>"""
 
 
-def _render_card(r: dict) -> str:
+def _render_card(
+    r: dict, bookmarked: bool = False, show_bookmark: bool = False
+) -> str:
     letter, color = _task_icon(r["task_name"])
     badge_cls = _badge_class(r["task_name"])
+    star_cls = "active" if bookmarked else ""
+    star_char = "\u2605" if bookmarked else "\u2606"
+    bookmark_html = ""
+    if show_bookmark:
+        rdate = r["date"]
+        rfile = r["filename"]
+        bookmark_html = (
+            f'<button class="bookmark-star {star_cls}" '
+            f"onclick=\"toggleBookmark('{rdate}', '{rfile}', this)\">"
+            f"{star_char}</button>"
+        )
     return f"""<a href="/report/{r['date']}/{r['filename']}" style="text-decoration:none;color:inherit">
 <div class="card">
     <div class="card-row">
@@ -496,6 +1018,9 @@ def _render_card(r: dict) -> str:
                 <span class="badge {badge_cls}">{r['task_name']}</span>
                 &nbsp;&middot;&nbsp; {r['display_time']} &middot; {r['date']}
             </div>
+        </div>
+        <div class="card-actions">
+            {bookmark_html}
         </div>
     </div>
 </div></a>"""
@@ -569,8 +1094,11 @@ def render_report(
     title: str,
     html_content: str,
     date_counts: dict[str, int] | None = None,
+    bookmarked: bool = False,
 ) -> str:
     """Render a single report with markdown content"""
+    star_cls = "active" if bookmarked else ""
+    star_char = "\u2605" if bookmarked else "\u2606"
     body = f"""
 <div class="layout">
 {_sidebar(dates, active_date=date, date_counts=date_counts)}
@@ -578,7 +1106,11 @@ def render_report(
     <div class="header">
         <h1>{title}</h1>
     </div>
-    <a href="/date/{date}" class="back-link">&larr; {date}</a>
+    <div class="action-bar">
+        <a href="/date/{date}" class="back-link">&larr; {date}</a>
+        <a href="/api/reports/{date}/{filename}/download" class="action-btn">Download .md</a>
+        <button class="bookmark-star {star_cls}" onclick="toggleBookmark('{date}', '{filename}', this)">{star_char}</button>
+    </div>
     <div class="report-content">{html_content}</div>
 </div>
 </div>"""
@@ -649,3 +1181,399 @@ def render_error(
 </div>
 </div>"""
     return _page("Error", body)
+
+
+def render_task_list(
+    dates: list[str],
+    tasks: list[dict],
+    date_counts: dict[str, int] | None = None,
+) -> str:
+    """Render the task list page"""
+    task_cards = []
+    for t in tasks:
+        enabled_cls = "badge-enabled" if t["enabled"] else "badge-disabled"
+        enabled_text = "Enabled" if t["enabled"] else "Disabled"
+
+        last_run = ""
+        if t.get("last_log"):
+            log = t["last_log"]
+            status_cls = "badge-success" if log.success else "badge-failed"
+            status_text = "Success" if log.success else "Failed"
+            cost = log.cost or "-"
+            duration = log.duration or "-"
+            last_run = (
+                f'<span class="badge {status_cls}">{status_text}</span> '
+                f'&middot; {log.timestamp[:19]} &middot; {cost} &middot; {duration}'
+            )
+        else:
+            last_run = '<span style="color:var(--muted)">No runs yet</span>'
+
+        toggle_text = "Disable" if t["enabled"] else "Enable"
+        task_cards.append(f"""
+<div class="card">
+    <div class="card-row">
+        <div class="card-body">
+            <div class="card-title"><a href="/tasks/{t['name']}">{t['name']}</a></div>
+            <div class="card-meta">
+                <span class="badge {enabled_cls}">{enabled_text}</span>
+                &nbsp;&middot;&nbsp; skill: {t['skill']} &middot; {t.get('description', '')}
+            </div>
+            <div class="card-meta" style="margin-top:6px">{last_run}</div>
+        </div>
+        <div class="card-actions">
+            <button class="run-btn" onclick="runTask('{t['name']}', this)">Run</button>
+            <button class="toggle-btn" onclick="toggleTask('{t['name']}', this)">{toggle_text}</button>
+        </div>
+    </div>
+</div>""")
+    cards_html = "\n".join(task_cards) if task_cards else '<div class="empty-state"><p>No tasks configured</p></div>'
+
+    body = f"""
+<div class="layout">
+{_sidebar(dates, active_nav="tasks", date_counts=date_counts)}
+<div class="main">
+    <div class="header"><h1>Task Manager</h1></div>
+    {cards_html}
+</div>
+</div>"""
+    return _page("Task Manager", body)
+
+
+def render_task_detail(
+    dates: list[str],
+    task_name: str,
+    task_config: dict,
+    history: list,
+    date_counts: dict[str, int] | None = None,
+) -> str:
+    """Render task detail page with config and execution history"""
+    # Config section
+    skill = task_config.get("skill", "")
+    description = task_config.get("description", "")
+    enabled = task_config.get("enabled", True)
+    max_turns = task_config.get("max_turns", 10)
+    params = task_config.get("parameters", {})
+    import json
+    params_str = json.dumps(params, ensure_ascii=False, indent=2) if params else "-"
+
+    enabled_cls = "badge-enabled" if enabled else "badge-disabled"
+    enabled_text = "Enabled" if enabled else "Disabled"
+    toggle_text = "Disable" if enabled else "Enable"
+
+    # History table
+    history_rows = ""
+    for h in history:
+        status_cls = "badge-success" if h.success else "badge-failed"
+        status_text = "OK" if h.success else "FAIL"
+        cost = h.cost or "-"
+        duration = h.duration or "-"
+        turns = str(h.turns) if h.turns else "-"
+        ts = h.timestamp[:19] if h.timestamp else "-"
+        # Derive report filename from log
+        report_fn = h.filename.replace(".txt", "_report.md")
+        report_link = f'<a href="/report/{h.date}/{report_fn}">Report</a>' if h.success else "-"
+        log_link = f'<a href="/logs/{h.date}/{h.filename}">Log</a>'
+        history_rows += f"""
+<tr>
+    <td>{h.date}</td>
+    <td>{h.display_time}</td>
+    <td><span class="badge {status_cls}">{status_text}</span></td>
+    <td>{cost}</td>
+    <td>{duration}</td>
+    <td>{turns}</td>
+    <td>{log_link}</td>
+    <td>{report_link}</td>
+</tr>"""
+
+    history_section = ""
+    if history_rows:
+        history_section = f"""
+<div class="log-section">
+    <div class="log-section-title">Execution History</div>
+    <table class="history-table">
+        <tr><th>Date</th><th>Time</th><th>Status</th><th>Cost</th><th>Duration</th><th>Turns</th><th>Log</th><th>Report</th></tr>
+        {history_rows}
+    </table>
+</div>"""
+    else:
+        history_section = '<div class="empty-state"><p>No execution history</p></div>'
+
+    body = f"""
+<div class="layout">
+{_sidebar(dates, active_nav="tasks", date_counts=date_counts)}
+<div class="main">
+    <div class="header"><h1>{task_name}</h1></div>
+    <div class="action-bar">
+        <a href="/tasks" class="back-link">&larr; All Tasks</a>
+        <button class="run-btn" onclick="runTask('{task_name}', this)">Run Now</button>
+        <button class="toggle-btn" onclick="toggleTask('{task_name}')">{toggle_text}</button>
+    </div>
+    <div class="log-section">
+        <div class="log-section-title">Configuration</div>
+        <div class="config-grid">
+            <span class="config-key">Skill</span><span class="config-val">{skill}</span>
+            <span class="config-key">Description</span><span class="config-val">{description}</span>
+            <span class="config-key">Status</span><span class="config-val"><span class="badge {enabled_cls}">{enabled_text}</span></span>
+            <span class="config-key">Max Turns</span><span class="config-val">{max_turns}</span>
+            <span class="config-key">Parameters</span><span class="config-val"><pre style="margin:0;padding:8px;font-size:12px;background:var(--bg);border-radius:4px">{params_str}</pre></span>
+        </div>
+    </div>
+    {history_section}
+</div>
+</div>"""
+    return _page(f"Task - {task_name}", body)
+
+
+def render_log(
+    dates: list[str],
+    log_entry,
+    date_counts: dict[str, int] | None = None,
+) -> str:
+    """Render a structured log entry"""
+    status_cls = "badge-success" if log_entry.success else "badge-failed"
+    status_text = "Success" if log_entry.success else "Failed"
+    cost = log_entry.cost or "-"
+    duration = log_entry.duration or "-"
+    turns = str(log_entry.turns) if log_entry.turns else "-"
+    ts = log_entry.timestamp[:19] if log_entry.timestamp else "-"
+
+    result_section = ""
+    if log_entry.result:
+        if log_entry.success:
+            result_section = f"""
+<div class="log-section">
+    <div class="log-section-title">Result</div>
+    <div class="report-content" style="padding:16px">{log_entry.result}</div>
+</div>"""
+        else:
+            result_section = f"""
+<div class="log-section">
+    <div class="log-section-title">Error</div>
+    <pre>{log_entry.result}</pre>
+</div>"""
+
+    body = f"""
+<div class="layout">
+{_sidebar(dates, date_counts=date_counts)}
+<div class="main">
+    <div class="header">
+        <h1>Log: {log_entry.task_name}</h1>
+    </div>
+    <div class="action-bar">
+        <a href="/tasks/{log_entry.task_name}" class="back-link">&larr; Task Detail</a>
+    </div>
+    <div class="log-header">
+        <div class="log-stat"><div class="label">Task</div><div class="value" style="font-size:14px">{log_entry.task_name}</div></div>
+        <div class="log-stat"><div class="label">Skill</div><div class="value" style="font-size:14px">{log_entry.skill}</div></div>
+        <div class="log-stat"><div class="label">Time</div><div class="value" style="font-size:14px">{ts}</div></div>
+        <div class="log-stat"><div class="label">Status</div><div class="value"><span class="badge {status_cls}">{status_text}</span></div></div>
+        <div class="log-stat"><div class="label">Cost</div><div class="value">{cost}</div></div>
+        <div class="log-stat"><div class="label">Duration</div><div class="value">{duration}</div></div>
+        <div class="log-stat"><div class="label">Turns</div><div class="value">{turns}</div></div>
+    </div>
+    <div class="log-section">
+        <div class="log-section-title">Prompt</div>
+        <pre>{log_entry.prompt}</pre>
+    </div>
+    {result_section}
+</div>
+</div>"""
+    return _page(f"Log - {log_entry.task_name}", body)
+
+
+def render_compare(
+    dates: list[str],
+    task_types: list[str],
+    current_task: str = "",
+    left_date: str = "",
+    left_file: str = "",
+    right_date: str = "",
+    right_file: str = "",
+    left_html: str = "",
+    right_html: str = "",
+    diff_html: str = "",
+    left_dates: list[str] | None = None,
+    left_files: list[dict] | None = None,
+    right_dates: list[str] | None = None,
+    right_files: list[dict] | None = None,
+    date_counts: dict[str, int] | None = None,
+) -> str:
+    """Render the report comparison page"""
+    import json as _json
+
+    # Task type selector
+    task_options = ['<option value="">Select task type</option>']
+    for t in task_types:
+        sel = ' selected' if t == current_task else ""
+        task_options.append(f'<option value="{t}"{sel}>{t}</option>')
+
+    # Date selectors
+    def _date_opts(items: list[str], current: str) -> str:
+        opts = ['<option value="">Select date</option>']
+        for d in items:
+            sel = ' selected' if d == current else ""
+            opts.append(f'<option value="{d}"{sel}>{d}</option>')
+        return "".join(opts)
+
+    def _file_opts(items: list[dict], current: str) -> str:
+        opts = ['<option value="">Select report</option>']
+        for f in items or []:
+            sel = ' selected' if f["filename"] == current else ""
+            opts.append(f'<option value="{f["filename"]}"{sel}>{f["display_time"]}</option>')
+        return "".join(opts)
+
+    left_date_opts = _date_opts(left_dates or dates, left_date)
+    left_file_opts = _file_opts(left_files, left_file)
+    right_date_opts = _date_opts(right_dates or dates, right_date)
+    right_file_opts = _file_opts(right_files, right_file)
+
+    compare_result = ""
+    if diff_html:
+        compare_result = f'<div class="compare-container">{diff_html}</div>'
+
+    body = f"""
+<div class="layout">
+{_sidebar(dates, active_nav="compare", date_counts=date_counts)}
+<div class="main">
+    <div class="header"><h1>Compare Reports</h1></div>
+    <form method="get" action="/compare" class="log-section">
+        <div class="log-section-title">Select Reports</div>
+        <div style="margin-bottom:12px">
+            <label style="font-size:13px;font-weight:600;color:var(--muted)">Task Type</label>
+            <select name="task_type" onchange="this.form.submit()" style="width:100%;padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;background:var(--surface);color:var(--text)">
+                {"".join(task_options)}
+            </select>
+        </div>
+        <div class="compare-form">
+            <div class="compare-col">
+                <h3>Left (Older)</h3>
+                <select name="left_date">{left_date_opts}</select>
+                <select name="left_file">{left_file_opts}</select>
+            </div>
+            <div class="compare-col">
+                <h3>Right (Newer)</h3>
+                <select name="right_date">{right_date_opts}</select>
+                <select name="right_file">{right_file_opts}</select>
+            </div>
+        </div>
+        <button type="submit" class="run-btn">Compare</button>
+    </form>
+    {compare_result}
+</div>
+</div>"""
+    return _page("Compare Reports", body)
+
+
+def render_bookmarks(
+    dates: list[str],
+    bookmarks: list[dict],
+    date_counts: dict[str, int] | None = None,
+) -> str:
+    """Render the bookmarks page"""
+    cards = []
+    for b in bookmarks:
+        cards.append(_render_card(b, bookmarked=True, show_bookmark=True))
+    cards_html = "\n".join(cards) if cards else '<div class="empty-state"><p>No bookmarks yet</p></div>'
+
+    body = f"""
+<div class="layout">
+{_sidebar(dates, active_nav="bookmarks", date_counts=date_counts)}
+<div class="main">
+    <div class="header"><h1>Bookmarks</h1></div>
+    {cards_html}
+</div>
+</div>"""
+    return _page("Bookmarks", body)
+
+
+def render_ask(
+    dates: list[str],
+    query: str = "",
+    results: list | None = None,
+    error: str = "",
+    rag_available: bool = False,
+    rag_status: dict | None = None,
+    date_counts: dict[str, int] | None = None,
+) -> str:
+    """Render the semantic search (Ask) page"""
+    results = results or []
+    rag_status = rag_status or {}
+
+    # Status indicator
+    dot_cls = "active" if rag_available else "inactive"
+    total = rag_status.get("total_docs", 0)
+    with_desc = rag_status.get("docs_with_description", 0)
+    desc_text = (
+        f", {with_desc}/{total} with descriptions"
+        if total > 0
+        else ""
+    )
+    gen_btn = (
+        f'<button class="ask-submit" style="margin-left:8px;padding:4px 12px;font-size:12px" '
+        f'onclick="generateDescriptions(this)">Generate Descriptions</button>'
+        if rag_available and with_desc < total
+        else ""
+    )
+    status_html = (
+        f'<div class="ask-status">'
+        f'<span class="ask-status-dot {dot_cls}"></span>'
+        f'{"Indexed {0} reports{1}".format(total, desc_text) if rag_available else "RAG unavailable"}'
+        f'{gen_btn}'
+        f'<span id="gen-result" style="margin-left:8px;font-size:12px"></span>'
+        f"</div>"
+    )
+
+    error_html = f'<div class="ask-error">{error}</div>' if error else ""
+
+    # Pre-rendered server-side results (for GET /ask?q=...)
+    results_html = ""
+    if results:
+        cards = []
+        for r in results:
+            pct = int(r.relevance * 100)
+            sections_html = ""
+            for s in r.sections:
+                sections_html += (
+                    f'<div class="ask-snippet">'
+                    f'<div class="ask-snippet-title">{_esc(s["title"])}</div>'
+                    f'{_esc(s["snippet"])}'
+                    f"</div>"
+                )
+            reasoning_html = (
+                f'<div class="ask-reasoning">{_esc(r.reasoning)}</div>'
+                if r.reasoning
+                else ""
+            )
+            badge_cls = _badge_class(r.task_name)
+            cards.append(
+                f"""<div class="ask-result-card">
+    <div class="ask-result-header">
+        <div class="ask-result-title"><a href="/report/{r.date}/{r.filename}">{r.task_name} - {r.display_time}</a></div>
+        <span class="relevance-badge">{pct}% match</span>
+    </div>
+    <div class="card-meta"><span class="badge {badge_cls}">{r.task_name}</span> &middot; {r.date}</div>
+    {reasoning_html}
+    <div class="ask-snippets">{sections_html}</div>
+</div>"""
+            )
+        results_html = "\n".join(cards)
+    elif query and not error:
+        results_html = '<div class="empty-state"><p>No relevant reports found</p></div>'
+
+    body = f"""
+<div class="layout">
+{_sidebar(dates, active_nav="ask", date_counts=date_counts)}
+<div class="main">
+    <div class="header"><h1>Semantic Search</h1></div>
+    {status_html}
+    {error_html}
+    <div class="ask-container">
+        <div class="ask-input-wrap">
+            <textarea id="ask-input" placeholder="Ask a question about your reports...">{_esc(query)}</textarea>
+            <button class="ask-submit" onclick="askQuery(this)">Ask</button>
+        </div>
+        <div id="ask-results">{results_html}</div>
+    </div>
+</div>
+</div>"""
+    return _page("Semantic Search", body)
