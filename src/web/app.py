@@ -1,9 +1,15 @@
 """Sanic web application factory for report viewer"""
 
+import asyncio
 import logging
+import sys
 from pathlib import Path
 
 from sanic import Sanic
+
+# Windows ProactorEventLoop supports subprocess creation (needed by claude_agent_sdk)
+if sys.platform == "win32":
+    asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
 
 from src.web.handlers import register_routes
 from src.web.report_reader import ReportReader

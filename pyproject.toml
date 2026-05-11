@@ -22,7 +22,6 @@ web = [
     "sanic>=24.0",
     "mistune>=3.0",
 ]
-
 [project.scripts]
 auto-research = "src.cli:main"
 

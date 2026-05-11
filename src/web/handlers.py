@@ -5,6 +5,8 @@ import difflib
 import json
 import logging
 import re
+import subprocess as sp
+import sys
 from pathlib import Path
 
 import mistune
@@ -236,14 +238,33 @@ def register_routes(app: Sanic) -> None:
         # Reload config to ensure latest state
         runner.load_config()
 
-        async def _run():
-            try:
-                await runner.run_task(task_name)
-                logger.info("Background task completed: %s", task_name)
-            except Exception:
-                logger.error("Background task failed: %s", task_name, exc_info=True)
+        config_path = getattr(request.app.ctx, "config_path", None)
 
-        asyncio.create_task(_run())
+        def _run():
+            try:
+                venv_python = str(Path(sys.executable).resolve())
+                cmd = [venv_python, "-m", "src.cli", "-c", str(config_path), "run", task_name]
+                logger.info("Launching task via subprocess: %s", " ".join(cmd))
+                proc = sp.Popen(
+                    cmd,
+                    cwd=str(Path(__file__).parent.parent.parent),
+                    stdout=sp.PIPE,
+                    stderr=sp.PIPE,
+                )
+                stdout, stderr = proc.communicate(timeout=600)
+                if proc.returncode == 0:
+                    logger.info("Task %s completed (exit 0)", task_name)
+                else:
+                    logger.error(
+                        "Task %s failed (exit %d): %s",
+                        task_name,
+                        proc.returncode,
+                        stderr.decode("utf-8", errors="replace")[:500],
+                    )
+            except Exception:
+                logger.error("Task %s subprocess failed", task_name, exc_info=True)
+
+        asyncio.create_task(asyncio.to_thread(_run))
         return json_resp({"status": "started", "task": task_name})
 
     @app.route("/api/tasks/<task_name:str>/toggle", methods=["POST"])
@@ -516,6 +537,7 @@ def register_routes(app: Sanic) -> None:
             if not query:
                 return json_resp({"error": "query required"}, status=400)
             results = await rag.search(query)
+            status = rag.get_status()
             return json_resp({
                 "results": [
                     {
@@ -528,7 +550,8 @@ def register_routes(app: Sanic) -> None:
                         "sections": r.sections,
                     }
                     for r in results
-                ]
+                ],
+                "usage": status.get("usage", {}),
             })
         except Exception as e:
             return json_resp({"error": str(e)}, status=500)

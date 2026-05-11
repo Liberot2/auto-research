@@ -98,6 +98,32 @@ def list_available_skills(config_path: str) -> None:
         print(f"  /{skill['name']}")
 
 
+def setup_serve_task(config_path: str, host: str = "127.0.0.1", port: int = 8000, report_dir: str = "reports") -> None:
+    """注册 web 服务开机自启任务"""
+    abs_config = str(Path(config_path).resolve())
+    abs_report_dir = str(Path(report_dir).resolve())
+    python_args = f'--config "{abs_config}" serve --host {host} --port {port} --report-dir "{abs_report_dir}"'
+
+    xml_content = create_task_xml(
+        task_name="auto_research_serve",
+        schedule="onstartup",
+        python_args=python_args,
+        description="Auto Research Web Report Viewer (auto-start)",
+    )
+
+    xml_dir = Path("config/windows_tasks")
+    xml_dir.mkdir(parents=True, exist_ok=True)
+    xml_path = xml_dir / "serve.xml"
+    xml_path.write_text(xml_content, encoding="utf-16")
+    print(f"XML saved: {xml_path}")
+
+    task_name = "serve"
+    if register_task_from_xml(xml_path, task_name):
+        print(f"Registered: {TASK_FOLDER}\\{task_name} (runs at logon)")
+    else:
+        print("Registration failed, please import XML manually")
+
+
 def setup_windows_task(task_name: str, schedule: str, config_path: str) -> None:
     """设置 Windows 定时任务"""
     abs_config = str(Path(config_path).resolve())
@@ -207,6 +233,11 @@ def main() -> None:
 
     sched_sub.add_parser("list", help="列出 Windows 定时任务")
 
+    serve_sched_parser = sched_sub.add_parser("serve", help="注册 web 服务开机自启")
+    serve_sched_parser.add_argument("--host", default="127.0.0.1", help="Bind address")
+    serve_sched_parser.add_argument("--port", type=int, default=8000, help="Port")
+    serve_sched_parser.add_argument("--report-dir", default="reports", help="Report directory")
+
     args = parser.parse_args()
     setup_logging(args.verbose)
 
@@ -245,6 +276,13 @@ def main() -> None:
             remove_windows_task(args.task_name)
         elif args.sched_action == "list":
             list_windows_tasks()
+        elif args.sched_action == "serve":
+            setup_serve_task(
+                config_path=args.config,
+                host=args.host,
+                port=args.port,
+                report_dir=args.report_dir,
+            )
         else:
             sched_parser.print_help()
 

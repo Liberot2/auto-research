@@ -82,6 +82,7 @@ class RagService:
         self._index_cache: dict[str, dict] = {}
         self._available = False
         self._init_error: str = ""
+        self._usage = {"search_calls": 0, "desc_calls": 0, "prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
 
         try:
             self._extract_nodes, self._extract_text, self._build_tree = (
@@ -149,6 +150,22 @@ class RagService:
         if base_url:
             client_kwargs["base_url"] = base_url
         return openai.AsyncOpenAI(**client_kwargs)
+
+    def _record_usage(self, response, category: str = "search") -> None:
+        """Record token usage from an OpenAI API response"""
+        if hasattr(response, "usage") and response.usage:
+            u = response.usage
+            if category == "search":
+                self._usage["search_calls"] += 1
+            else:
+                self._usage["desc_calls"] += 1
+            self._usage["prompt_tokens"] += u.prompt_tokens or 0
+            self._usage["completion_tokens"] += u.completion_tokens or 0
+            self._usage["total_tokens"] += u.total_tokens or 0
+            logger.info(
+                "Usage [+%d tokens] %s: prompt=%d, completion=%d",
+                u.total_tokens, category, u.prompt_tokens, u.completion_tokens,
+            )
 
     def _index_report(self, report_path: Path, date: str) -> None:
         """Build tree for a single report"""
@@ -258,6 +275,7 @@ Return ONLY the description sentence, nothing else."""
                 temperature=0,
                 max_tokens=100,
             )
+            self._record_usage(response, "desc")
             return response.choices[0].message.content.strip()
         except Exception as e:
             logger.error("Failed to generate description for %s: %s", data.get("filename"), e)
@@ -369,6 +387,7 @@ Return ONLY the description sentence, nothing else."""
             temperature=0,
         )
         content = response.choices[0].message.content
+        self._record_usage(response, "search")
 
         return self._parse_search_response(content, top_k)
 
@@ -451,5 +470,6 @@ Reply in the following JSON format only:
             "error": self._init_error if not self._available else "",
             "total_docs": len(self._index_cache),
             "docs_with_description": with_desc,
+            "usage": self._usage,
             "index_dir": str(self.index_dir),
         }
