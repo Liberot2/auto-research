@@ -1,0 +1,27 @@
+# cc-connect configuration for auto-research project
+# WeChat personal account via ilink gateway
+
+language = "zh"
+
+[log]
+level = "info"
+
+[[projects]]
+name = "auto-research"
+
+[projects.agent]
+type = "claudecode"
+
+[projects.agent.options]
+work_dir = "e:/workspace/auto-research"
+mode = "bypassPermissions"
+
+[[projects.platforms]]
+type = "weixin"
+
+[projects.platforms.options]
+# token will be filled by `cc-connect weixin setup`
+# allow_from will be set after first scan
+token = "5003db75d942@im.bot:0600002011fb1ee0fdc97864c73d9b887873c6"
+base_url = "https://ilinkai.weixin.qq.com"
+account_id = "5003db75d942@im.bot"
