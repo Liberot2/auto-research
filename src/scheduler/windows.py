@@ -98,8 +98,8 @@ def create_task_xml(
         ET.SubElement(time_trigger, "Enabled").text = "true"
 
     elif schedule_type == "onstartup":
-        boot_trigger = ET.SubElement(trigger, "BootTrigger")
-        ET.SubElement(boot_trigger, "Enabled").text = "true"
+        logon_trigger = ET.SubElement(trigger, "LogonTrigger")
+        ET.SubElement(logon_trigger, "Enabled").text = "true"
 
     else:
         raise ValueError(f"不支持的计划格式: {schedule}")

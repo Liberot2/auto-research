@@ -23,7 +23,8 @@ def create_app(
 ) -> Sanic:
     """Create and configure the Sanic application"""
     app = Sanic("ReportViewer")
-    app.ctx.reader = ReportReader(report_dir)
+    research_dir = report_dir.parent / "data" / "research"
+    app.ctx.reader = ReportReader(report_dir, research_dir=research_dir)
 
     # Log reader
     from src.web.log_reader import LogReader
@@ -76,6 +77,21 @@ def create_app(
     app.ctx.rag_service = rag
 
     register_routes(app)
+
+    # MSS SOP management routes (optional)
+    try:
+        from src.web.mss_handlers import register_mss_routes
+        register_mss_routes(app)
+    except ImportError:
+        logger.debug("MSS module not available")
+
+    # Research project routes (optional)
+    try:
+        from src.web.research_handlers import register_research_routes
+        register_research_routes(app)
+    except ImportError:
+        logger.debug("Research module not available")
+
     return app
 
 

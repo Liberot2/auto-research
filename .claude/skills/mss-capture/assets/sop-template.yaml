@@ -1,0 +1,49 @@
+# SOP Template - Reference for mss-capture skill
+
+name: "{{sop_name}}"
+description: "{{description}}"
+version: "1.0"
+
+auth:
+  profile: "{{auth_profile}}"  # References config/mss_auth.yaml
+
+base_url: "{{base_url}}"
+
+input_parameters:
+  # Example parameter definition:
+  # param_name:
+  #   type: string
+  #   required: true
+  #   description: "Parameter description"
+
+steps:
+  # Example step definition:
+  # - id: "{{step_id}}"
+  #   name: "{{step_name}}"
+  #   method: GET
+  #   path: "/api/v1/resource/{{resource_id}}"
+  #   headers:
+  #     Authorization: "Bearer {{session_token}}"
+  #   expect:
+  #     status: 200
+  #   extract:
+  #     var_name: "$.data.field"
+
+  # Conditional step:
+  # - id: "{{step_id}}"
+  #   name: "{{step_name}}"
+  #   condition: "{{variable}} == 'value'"
+  #   method: POST
+  #   path: "/api/v1/resource"
+  #   body:
+  #     key: "{{variable}}"
+  #   expect:
+  #     status: 201
+  #   extract:
+  #     new_var: "$.data.id"
+
+output:
+  summary: "{{output_summary}}"
+  fields:
+    # - field1
+    # - field2

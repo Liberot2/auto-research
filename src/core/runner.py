@@ -183,6 +183,17 @@ class TaskRunner:
             params["task_name"] = task_name
             params["report_path"] = str(context.get_report_path())
 
+            # Research task: inject research_dir parameter
+            task_type = task_config.get("type", "")
+            if task_type == "research":
+                project_slug = params.get("project", "")
+                if project_slug:
+                    research_dir = (
+                        self.config_path.parent.parent / "data" / "research"
+                    ).resolve()
+                    research_dir.mkdir(parents=True, exist_ok=True)
+                    params["research_dir"] = str(research_dir)
+
             # 构建 slash command prompt
             prompt = _build_slash_command(skill_name, params)
             logger.info("Slash command: %s", prompt)
@@ -264,6 +275,7 @@ class TaskRunner:
                 "skill": skill_name,
                 "description": config.get("description", ""),
                 "enabled": config.get("enabled", True),
+                "type": config.get("type", "task"),
             })
         return tasks
 

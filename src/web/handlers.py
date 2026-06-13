@@ -125,7 +125,10 @@ def register_routes(app: Sanic) -> None:
                 )
             )
         html_content = _md(content)
-        title = f"{meta.task_name} - {meta.display_time}"
+        task_label = meta.task_name
+        if meta.task_name.startswith("research/"):
+            task_label = f"Research: {meta.task_name[len('research/'):]}"
+        title = f"{task_label} - {meta.display_time}"
         bookmarked = bm_store.is_bookmarked(date, filename)
         return html(
             templates.render_report(
@@ -569,11 +572,22 @@ def register_routes(app: Sanic) -> None:
         rag = _rag_service(request)
         if not rag or not rag.available:
             return json_resp({"error": "RAG service not available"}, status=503)
-        try:
-            count = await rag.generate_descriptions()
-            return json_resp({"status": "ok", "generated": count})
-        except Exception as e:
-            return json_resp({"error": str(e)}, status=500)
+        if getattr(rag, "_gen_running", False):
+            return json_resp({"status": "running", "generated": 0})
+        rag._gen_running = True
+        rag._gen_result = None
+
+        async def _bg():
+            try:
+                count = await rag.generate_descriptions()
+                rag._gen_result = {"status": "ok", "generated": count}
+            except Exception as e:
+                rag._gen_result = {"status": "error", "error": str(e)}
+            finally:
+                rag._gen_running = False
+
+        asyncio.ensure_future(_bg())
+        return json_resp({"status": "started"})
 
     @app.route("/api/rag/status")
     async def api_rag_status(request: Request):

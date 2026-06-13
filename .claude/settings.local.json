@@ -163,7 +163,21 @@
       "Bash(cc-connect weixin:*)",
       "Bash(xargs grep:*)",
       "Bash(cc-connect send:*)",
-      "Bash(cc-connect notify:*)"
+      "Bash(cc-connect notify:*)",
+      "Bash(schtasks //query //tn \"AutoResearch\\\\\\\\serve\" //v //fo list)",
+      "Bash(schtasks //query //tn \"AutoResearch\\\\\\\\serve\" //v //fo csv)",
+      "Bash(schtasks //run //tn \"AutoResearch\\\\\\\\serve\")",
+      "Bash(git config:*)",
+      "Bash(env)",
+      "Read(//c/Users/Administrator/**)",
+      "Bash(npm -v)",
+      "Bash(npx ruflo@latest daemon start)",
+      "Bash(taskkill //PID 17780 //F)",
+      "Bash(taskkill //PID 44424 //F)",
+      "Bash(taskkill //PID 35620 //F)",
+      "Bash(where go:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)"
     ]
   }
 }

@@ -22,6 +22,11 @@ web = [
     "sanic>=24.0",
     "mistune>=3.0",
 ]
+mss = [
+    "playwright>=1.40",
+    "httpx>=0.27",
+    "jsonpath-ng>=1.6",
+]
 [project.scripts]
 auto-research = "src.cli:main"
 

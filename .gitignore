@@ -41,5 +41,32 @@ data/
 
 # Local config
 config/windows_tasks/
+config/mss_auth.yaml
 .env
 .env.local
+
+# Node (Playwright verification only)
+node_modules/
+package.json
+package-lock.json
+
+# Ruflo / Claude Flow generated
+.claude-flow/
+.claude/agents/
+.claude/commands/
+.claude/helpers/
+.claude/settings.json
+.claude/settings.local.json.tmp.*
+.claude/skills/mss-*/
+!.claude/skills/mss-capture/
+!.claude/skills/mss-sop/
+.mcp.json
+
+# CC-connect
+.cc-connect/
+
+# Misc temp files
+0
+2
+Path
+report

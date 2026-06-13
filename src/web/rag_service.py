@@ -470,6 +470,7 @@ Reply in the following JSON format only:
             "error": self._init_error if not self._available else "",
             "total_docs": len(self._index_cache),
             "docs_with_description": with_desc,
+            "generating": getattr(self, "_gen_running", False),
             "usage": self._usage,
             "index_dir": str(self.index_dir),
         }

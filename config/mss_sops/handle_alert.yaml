@@ -1,0 +1,94 @@
+# Example SOP: Handle high-severity security alert
+# This file demonstrates the SOP YAML schema for MSS platform automation.
+
+name: handle_alert
+description: "Handle high-severity security alert - investigate and respond"
+version: "1.0"
+
+auth:
+  profile: mss_prod  # References config/mss_auth.yaml
+
+base_url: "https://mss.example.com"
+
+input_parameters:
+  alert_id:
+    type: string
+    required: true
+    description: "Alert ID to handle"
+  operator_id:
+    type: string
+    required: false
+    default: "agent"
+    description: "Operator performing the action"
+
+steps:
+  - id: query_alert
+    name: "Query Alert Detail"
+    method: GET
+    path: "/api/v1/alerts/{{alert_id}}"
+    headers:
+      Authorization: "Bearer {{session_token}}"
+    expect:
+      status: 200
+    extract:
+      source_ip: "$.data.source_ip"
+      target_ip: "$.data.target_ip"
+      alert_type: "$.data.alert_type"
+
+  - id: query_threat_intel
+    name: "Query Threat Intelligence"
+    method: POST
+    path: "/api/v1/threat_intel/query"
+    headers:
+      Authorization: "Bearer {{session_token}}"
+      Content-Type: "application/json"
+    body:
+      indicators:
+        - "{{source_ip}}"
+        - "{{target_ip}}"
+    expect:
+      status: 200
+    extract:
+      threat_level: "$.data.risk_level"
+
+  - id: create_ticket
+    name: "Create Response Ticket"
+    condition: "{{threat_level}} == 'high'"
+    method: POST
+    path: "/api/v1/tickets"
+    headers:
+      Authorization: "Bearer {{session_token}}"
+      Content-Type: "application/json"
+    body:
+      title: "Auto-response for alert {{alert_id}}"
+      type: "{{alert_type}}"
+      priority: "{{threat_level}}"
+      source_ip: "{{source_ip}}"
+      target_ip: "{{target_ip}}"
+      operator: "{{operator_id}}"
+    expect:
+      status: 201
+    extract:
+      ticket_id: "$.data.ticket_id"
+
+  - id: update_alert_status
+    name: "Update Alert Status"
+    method: PUT
+    path: "/api/v1/alerts/{{alert_id}}/status"
+    headers:
+      Authorization: "Bearer {{session_token}}"
+      Content-Type: "application/json"
+    body:
+      status: "processing"
+      ticket_id: "{{ticket_id}}"
+      operator: "{{operator_id}}"
+    expect:
+      status: 200
+
+output:
+  summary: "Alert {{alert_id}} processed. Ticket {{ticket_id}} created. Threat level: {{threat_level}}"
+  fields:
+    - ticket_id
+    - threat_level
+    - source_ip
+    - target_ip

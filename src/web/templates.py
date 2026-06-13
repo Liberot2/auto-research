@@ -228,6 +228,7 @@ a:hover { text-decoration: underline; }
 .badge-site_monitor { background: #dbeafe; color: #1e40af; }
 .badge-daily_report { background: #d1fae5; color: #065f46; }
 .badge-github_agent_trend { background: #ede9fe; color: #5b21b6; }
+.badge-research { background: #fce7f3; color: #9d174d; }
 .badge-default { background: var(--accent-light); color: var(--accent); }
 .badge-enabled { background: #d1fae5; color: #065f46; }
 .badge-disabled { background: #fee2e2; color: #991b1b; }
@@ -238,6 +239,7 @@ a:hover { text-decoration: underline; }
 :root[data-theme='dark'] .badge-site_monitor { background: #1e3a5f; color: #93c5fd; }
 :root[data-theme='dark'] .badge-daily_report { background: #064e3b; color: #6ee7b7; }
 :root[data-theme='dark'] .badge-github_agent_trend { background: #4c1d95; color: #c4b5fd; }
+:root[data-theme='dark'] .badge-research { background: #831843; color: #f9a8d4; }
 :root[data-theme='dark'] .badge-default { background: var(--accent-light); color: var(--accent); }
 :root[data-theme='dark'] .badge-enabled { background: #064e3b; color: #6ee7b7; }
 :root[data-theme='dark'] .badge-disabled { background: #7f1d1d; color: #fca5a5; }
@@ -521,17 +523,19 @@ a:hover { text-decoration: underline; }
 
 /* Ask / semantic search */
 .ask-container {
-    max-width: 800px;
-    margin: 0 auto;
+    max-width: 860px;
 }
 .ask-input-wrap {
-    position: relative;
-    margin-bottom: 24px;
+    display: flex;
+    gap: 10px;
+    margin-bottom: 28px;
+    align-items: flex-end;
 }
 .ask-input-wrap textarea {
-    width: 100%;
-    min-height: 80px;
-    padding: 14px 18px;
+    flex: 1;
+    min-height: 52px;
+    max-height: 200px;
+    padding: 12px 16px;
     border: 2px solid var(--border);
     border-radius: var(--radius);
     font-size: 15px;
@@ -549,8 +553,7 @@ a:hover { text-decoration: underline; }
     box-shadow: 0 0 0 3px var(--accent-light);
 }
 .ask-submit {
-    margin-top: 10px;
-    padding: 10px 28px;
+    padding: 12px 24px;
     background: var(--accent);
     color: #fff;
     border: none;
@@ -559,6 +562,8 @@ a:hover { text-decoration: underline; }
     font-size: 14px;
     font-weight: 500;
     transition: background 0.15s, opacity 0.15s;
+    white-space: nowrap;
+    height: 48px;
 }
 .ask-submit:hover { background: var(--accent-hover); }
 .ask-submit:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -575,67 +580,76 @@ a:hover { text-decoration: underline; }
     background: var(--surface);
     border: 1px solid var(--border);
     border-radius: var(--radius);
-    padding: 16px 20px;
-    margin-bottom: 12px;
+    padding: 20px 24px;
+    margin-bottom: 16px;
     box-shadow: var(--shadow-sm);
-    transition: border-color 0.15s;
+    transition: border-color 0.15s, box-shadow 0.15s;
 }
-.ask-result-card:hover { border-color: var(--accent); }
+.ask-result-card:hover { border-color: var(--accent); box-shadow: var(--shadow-md); }
 .ask-result-header {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
     gap: 12px;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
 }
 .ask-result-title {
-    font-size: 15px;
+    font-size: 16px;
     font-weight: 600;
 }
 .ask-result-title a { color: var(--text); }
 .ask-result-title a:hover { color: var(--accent); text-decoration: none; }
 .relevance-badge {
-    display: inline-block;
-    padding: 2px 10px;
-    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 12px;
+    border-radius: 20px;
     font-size: 12px;
     font-weight: 600;
-    background: var(--accent-light);
-    color: var(--accent);
     white-space: nowrap;
 }
+.relevance-high { background: #dcfce7; color: #166534; }
+.relevance-med { background: var(--accent-light); color: var(--accent); }
+.relevance-low { background: #fef3c7; color: #92400e; }
+:root[data-theme='dark'] .relevance-high { background: #052e16; color: #86efac; }
+:root[data-theme='dark'] .relevance-med { background: #1e1b4b; color: #a5b4fc; }
+:root[data-theme='dark'] .relevance-low { background: #451a03; color: #fcd34d; }
 .ask-reasoning {
     font-size: 13px;
     color: var(--text-secondary);
-    margin-bottom: 10px;
-    padding: 8px 12px;
+    margin: 10px 0;
+    padding: 10px 14px;
     background: var(--bg);
     border-radius: 6px;
-    line-height: 1.5;
+    line-height: 1.6;
+    border-left: 3px solid var(--accent);
 }
 .ask-snippets {
-    margin-top: 8px;
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 }
 .ask-snippet {
     font-size: 13px;
     color: var(--text-secondary);
-    padding: 6px 10px;
-    margin-bottom: 4px;
-    border-left: 3px solid var(--accent);
-    background: var(--accent-light);
-    border-radius: 0 4px 4px 0;
+    padding: 8px 12px;
+    border-left: 3px solid var(--border);
+    background: var(--bg);
+    border-radius: 0 6px 6px 0;
+    line-height: 1.5;
 }
 .ask-snippet-title {
     font-weight: 600;
     color: var(--text);
     font-size: 12px;
-    margin-bottom: 2px;
+    margin-bottom: 3px;
 }
 .ask-status {
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
     font-size: 13px;
     color: var(--muted);
 }
@@ -649,8 +663,9 @@ a:hover { text-decoration: underline; }
 .ask-status-dot.inactive { background: var(--red); }
 .ask-loading {
     text-align: center;
-    padding: 40px;
+    padding: 48px;
     color: var(--muted);
+    font-size: 15px;
 }
 
 /* Log viewer */
@@ -748,6 +763,66 @@ a:hover { text-decoration: underline; }
     color: var(--text);
     margin-bottom: 8px;
 }
+
+/* Phase progress bar */
+.phase-progress {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    margin: 12px 0;
+    position: relative;
+}
+.phase-step {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+.phase-step .phase-dot {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    background: var(--surface);
+    margin-bottom: 6px;
+    position: relative;
+    z-index: 1;
+}
+.phase-step .phase-label {
+    font-size: 11px;
+    color: var(--muted);
+    text-align: center;
+    white-space: nowrap;
+}
+.phase-step-done .phase-dot {
+    background: var(--phase-color);
+    border-color: var(--phase-color);
+}
+.phase-step-done .phase-label {
+    color: var(--text-secondary);
+}
+.phase-step-active .phase-dot {
+    background: var(--phase-color);
+    border-color: var(--phase-color);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--phase-color) 25%, transparent);
+}
+.phase-step-active .phase-label {
+    color: var(--text);
+    font-weight: 600;
+}
+.phase-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: calc(50% + 12px);
+    width: calc(100% - 24px);
+    height: 2px;
+    background: var(--border);
+}
+.phase-step-done:not(:last-child)::after {
+    background: var(--phase-color);
+}
 """
 
 _JS = """
@@ -830,8 +905,15 @@ async function askQuery(btn) {
         resultsDiv.innerHTML = '<div class="ask-error">Request failed: ' + e.message + '</div>';
     }
     btn.disabled = false;
-    btn.textContent = 'Ask';
+    btn.textContent = 'Search';
 }
+document.getElementById('ask-input').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        var btn = document.querySelector('.ask-submit');
+        if (btn && !btn.disabled) askQuery(btn);
+    }
+});
 function renderAskResults(results, container) {
     if (!results.length) {
         container.innerHTML = '<div class="empty-state"><p>No relevant reports found</p></div>';
@@ -841,12 +923,13 @@ function renderAskResults(results, container) {
     for (var i = 0; i < results.length; i++) {
         var r = results[i];
         var pct = Math.round(r.relevance * 100);
+        var relCls = pct >= 70 ? 'relevance-high' : pct >= 40 ? 'relevance-med' : 'relevance-low';
         html += '<div class="ask-result-card">';
         html += '<div class="ask-result-header">';
-        html += '<div class="ask-result-title"><a href="/report/' + r.date + '/' + r.filename + '">' + r.task_name + ' - ' + r.display_time + '</a></div>';
-        html += '<span class="relevance-badge">' + pct + '% match</span>';
+        html += '<div class="ask-result-title"><a href="/report/' + r.date + '/' + r.filename + '">' + escHtml(r.task_name) + ' &mdash; ' + escHtml(r.display_time) + '</a></div>';
+        html += '<span class="relevance-badge ' + relCls + '">' + pct + '% match</span>';
         html += '</div>';
-        html += '<div class="card-meta"><span class="badge ' + badgeClass(r.task_name) + '">' + r.task_name + '</span> &middot; ' + r.date + '</div>';
+        html += '<div class="card-meta"><span class="badge ' + badgeClass(r.task_name) + '">' + escHtml(r.task_name) + '</span> &middot; ' + r.date + '</div>';
         if (r.reasoning) {
             html += '<div class="ask-reasoning">' + escHtml(r.reasoning) + '</div>';
         }
@@ -867,6 +950,7 @@ function renderAskResults(results, container) {
 }
 function badgeClass(name) {
     var map = {'morning_papers':'badge-morning_papers','site_monitor':'badge-site_monitor','daily_report':'badge-daily_report','github_agent_trend':'badge-github_agent_trend'};
+    if (name.startsWith('research/')) return 'badge-research';
     return map[name] || 'badge-default';
 }
 function escHtml(s) {
@@ -882,15 +966,79 @@ async function generateDescriptions(btn) {
         var data = await resp.json();
         if (data.error) {
             resultEl.textContent = 'Error: ' + data.error;
+            btn.disabled = false;
+            btn.textContent = 'Generate Descriptions';
+            return;
+        }
+        resultEl.textContent = 'Generating descriptions in background...';
+        var pollId = setInterval(async function() {
+            try {
+                var r = await fetch('/api/rag/status');
+                var d = await r.json();
+                var total = d.total_docs || 0;
+                var desc = d.docs_with_description || 0;
+                resultEl.textContent = 'Progress: ' + desc + '/' + total + ' descriptions';
+                if (!d.generating) {
+                    clearInterval(pollId);
+                    resultEl.textContent = 'Done: ' + desc + ' descriptions generated';
+                    btn.remove();
+                }
+            } catch(e) {}
+        }, 3000);
+    } catch(e) {
+        resultEl.textContent = 'Failed: ' + e.message;
+        btn.disabled = false;
+        btn.textContent = 'Generate Descriptions';
+    }
+}
+async function advanceResearch(slug, btn) {
+    btn.disabled = true;
+    var orig = btn.textContent;
+    btn.textContent = 'Running...';
+    btn.classList.add('running');
+    try {
+        var resp = await fetch('/api/research/' + slug + '/advance', {method: 'POST'});
+        var data = await resp.json();
+        if (data.error) {
+            alert('Error: ' + data.error);
         } else {
-            resultEl.textContent = 'Generated ' + data.generated + ' descriptions';
-            btn.remove();
+            alert('Research session completed. Refreshing...');
+            location.reload();
+        }
+    } catch(e) {
+        alert('Request failed: ' + e.message);
+    }
+    btn.disabled = false;
+    btn.textContent = orig;
+    btn.classList.remove('running');
+}
+async function submitResearch(e) {
+    e.preventDefault();
+    var topic = document.getElementById('research-topic').value.trim();
+    if (!topic) return;
+    var resultEl = document.getElementById('create-result');
+    var btn = e.target.querySelector('button[type="submit"]');
+    btn.disabled = true;
+    btn.textContent = 'Creating...';
+    try {
+        var resp = await fetch('/api/research/create', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({topic: topic})
+        });
+        var data = await resp.json();
+        if (data.error) {
+            resultEl.textContent = 'Error: ' + data.error;
+            btn.disabled = false;
+            btn.textContent = 'Create Project';
+        } else {
+            window.location.href = '/research/' + data.slug;
         }
     } catch(e) {
         resultEl.textContent = 'Failed: ' + e.message;
+        btn.disabled = false;
+        btn.textContent = 'Create Project';
     }
-    btn.disabled = false;
-    btn.textContent = 'Generate Descriptions';
 }
 </script>
 """
@@ -922,10 +1070,14 @@ def _esc(text: str) -> str:
 
 
 def _task_icon(task_name: str) -> tuple[str, str]:
+    if task_name.startswith("research/"):
+        return ("R", "#ec4899")
     return _TASK_ICONS.get(task_name, (task_name[0].upper(), "#6b7280"))
 
 
 def _badge_class(task_name: str) -> str:
+    if task_name.startswith("research/"):
+        return "badge-research"
     return _BADGE_CLASSES.get(task_name, "badge-default")
 
 
@@ -961,10 +1113,12 @@ def _sidebar(
     date_list = "\n".join(items) if items else "<li>No dates</li>"
 
     nav_items = [
+        ("research", "Research", "/research"),
         ("tasks", "Task Manager", "/tasks"),
         ("compare", "Compare", "/compare"),
         ("bookmarks", "Bookmarks", "/bookmarks"),
         ("ask", "Semantic Search", "/ask"),
+        ("mss_sops", "MSS SOPs", "/mss/sops"),
     ]
     nav_links = []
     for key, label, href in nav_items:
@@ -1008,14 +1162,21 @@ def _render_card(
             f"onclick=\"toggleBookmark('{rdate}', '{rfile}', this)\">"
             f"{star_char}</button>"
         )
+    # Display label: research/slug -> "Research: slug"
+    display_name = r["task_name"]
+    badge_label = r["task_name"]
+    if r["task_name"].startswith("research/"):
+        slug = r["task_name"][len("research/"):]
+        display_name = f"Research: {slug}"
+        badge_label = "research"
     return f"""<a href="/report/{r['date']}/{r['filename']}" style="text-decoration:none;color:inherit">
 <div class="card">
     <div class="card-row">
         <div class="card-icon" style="background:{color}">{letter}</div>
         <div class="card-body">
-            <div class="card-title"><a href="/report/{r['date']}/{r['filename']}">{r['task_name']}</a></div>
+            <div class="card-title"><a href="/report/{r['date']}/{r['filename']}">{display_name}</a></div>
             <div class="card-meta">
-                <span class="badge {badge_cls}">{r['task_name']}</span>
+                <span class="badge {badge_cls}">{badge_label}</span>
                 &nbsp;&middot;&nbsp; {r['display_time']} &middot; {r['date']}
             </div>
         </div>
@@ -1545,13 +1706,14 @@ def render_ask(
                 else ""
             )
             badge_cls = _badge_class(r.task_name)
+            rel_cls = "relevance-high" if pct >= 70 else "relevance-med" if pct >= 40 else "relevance-low"
             cards.append(
                 f"""<div class="ask-result-card">
     <div class="ask-result-header">
-        <div class="ask-result-title"><a href="/report/{r.date}/{r.filename}">{r.task_name} - {r.display_time}</a></div>
-        <span class="relevance-badge">{pct}% match</span>
+        <div class="ask-result-title"><a href="/report/{r.date}/{r.filename}">{_esc(r.task_name)} &mdash; {r.display_time}</a></div>
+        <span class="relevance-badge {rel_cls}">{pct}% match</span>
     </div>
-    <div class="card-meta"><span class="badge {badge_cls}">{r.task_name}</span> &middot; {r.date}</div>
+    <div class="card-meta"><span class="badge {badge_cls}">{_esc(r.task_name)}</span> &middot; {r.date}</div>
     {reasoning_html}
     <div class="ask-snippets">{sections_html}</div>
 </div>"""
@@ -1569,11 +1731,312 @@ def render_ask(
     {error_html}
     <div class="ask-container">
         <div class="ask-input-wrap">
-            <textarea id="ask-input" placeholder="Ask a question about your reports...">{_esc(query)}</textarea>
-            <button class="ask-submit" onclick="askQuery(this)">Ask</button>
+            <textarea id="ask-input" placeholder="Ask a question about your reports... (Ctrl+Enter to search)">{_esc(query)}</textarea>
+            <button class="ask-submit" onclick="askQuery(this)">Search</button>
         </div>
         <div id="ask-results">{results_html}</div>
     </div>
 </div>
 </div>"""
     return _page("Semantic Search", body)
+
+
+# ── Research Project Templates ──────────────────────────────────────────
+
+_PHASE_ORDER = ["discovery", "analysis", "solution_draft", "validation", "finalization", "complete"]
+_PHASE_LABELS = {
+    "discovery": "1. Discovery",
+    "analysis": "2. Analysis",
+    "solution_draft": "3. Solution Draft",
+    "validation": "4. Validation",
+    "finalization": "5. Finalization",
+    "complete": "Done",
+}
+_PHASE_COLORS = {
+    "discovery": "#3b82f6",
+    "analysis": "#8b5cf6",
+    "solution_draft": "#f59e0b",
+    "validation": "#10b981",
+    "finalization": "#6366f1",
+    "complete": "#10b981",
+}
+
+
+def _phase_progress_bar(current_phase: str) -> str:
+    """Render a horizontal phase progress bar"""
+    current_idx = _PHASE_ORDER.index(current_phase) if current_phase in _PHASE_ORDER else 0
+    steps = []
+    for i, phase in enumerate(_PHASE_ORDER):
+        color = _PHASE_COLORS.get(phase, "#6b7280")
+        if i < current_idx:
+            css_class = "phase-step-done"
+        elif i == current_idx:
+            css_class = "phase-step-active"
+        else:
+            css_class = "phase-step-pending"
+        label = _PHASE_LABELS.get(phase, phase)
+        steps.append(
+            f'<div class="phase-step {css_class}" style="--phase-color:{color}">'
+            f'<div class="phase-dot"></div>'
+            f'<div class="phase-label">{label}</div>'
+            f"</div>"
+        )
+    return f'<div class="phase-progress">{"".join(steps)}</div>'
+
+
+def render_research_list(
+    dates: list[str],
+    projects: list,
+    date_counts: dict[str, int] | None = None,
+) -> str:
+    """Render the research project list page"""
+    if not projects:
+        cards_html = """<div class="empty-state">
+            <p>No research projects yet</p>
+            <a href="/research/new" class="action-btn" style="margin-top:12px">Create New Project</a>
+        </div>"""
+    else:
+        cards = []
+        for p in projects:
+            phase_color = _PHASE_COLORS.get(p.phase, "#6b7280")
+            phase_label = _PHASE_LABELS.get(p.phase, p.phase)
+            confidence = p.confidence
+            cards.append(f"""
+<div class="card" onclick="location.href='/research/{p.slug}'" style="cursor:pointer">
+    <div class="card-row">
+        <div class="card-icon" style="background:{phase_color}">{p.phase[0].upper()}</div>
+        <div class="card-body">
+            <div class="card-title">{_esc(p.topic)}</div>
+            <div class="card-meta">
+                <span class="badge" style="background:{phase_color}20;color:{phase_color}">{phase_label}</span>
+                &middot; Confidence: {confidence}%
+                &middot; Sessions: {p.total_sessions}
+                &middot; Sources: {p.source_count}
+            </div>
+        </div>
+    </div>
+</div>""")
+        cards_html = "\n".join(cards)
+
+    body = f"""
+<div class="layout">
+{_sidebar(dates, active_nav="research", date_counts=date_counts)}
+<div class="main">
+    <div class="header">
+        <h1>Research Projects</h1>
+        <a href="/research/new" class="run-btn" style="text-decoration:none">New Project</a>
+    </div>
+    {cards_html}
+</div>
+</div>"""
+    return _page("Research", body)
+
+
+def render_research_detail(
+    dates: list[str],
+    project,
+    state_content: str,
+    sessions: list,
+    date_counts: dict[str, int] | None = None,
+) -> str:
+    """Render research project detail page"""
+    phase_bar = _phase_progress_bar(project.phase)
+    phase_color = _PHASE_COLORS.get(project.phase, "#6b7280")
+
+    # Session list
+    session_items = ""
+    for s in sessions[:10]:
+        session_items += f'<li><a href="/research/{project.slug}/sessions/{s.filename}">{s.timestamp}</a></li>'
+    session_list = f"<ul>{session_items}</ul>" if session_items else '<span style="color:var(--muted)">No sessions yet</span>'
+
+    body = f"""
+<div class="layout">
+{_sidebar(dates, active_nav="research", date_counts=date_counts)}
+<div class="main">
+    <div class="header">
+        <h1>{_esc(project.topic)}</h1>
+    </div>
+    <div class="action-bar">
+        <a href="/research" class="back-link">&larr; All Projects</a>
+        <a href="/research/{project.slug}/solution" class="action-btn">Solution</a>
+        <a href="/research/{project.slug}/checklist" class="action-btn">Checklist</a>
+        <a href="/research/{project.slug}/todo" class="action-btn">TODO</a>
+        <a href="/research/{project.slug}/sessions" class="action-btn">Sessions</a>
+        <button class="run-btn" onclick="advanceResearch('{project.slug}', this)">Advance Research</button>
+    </div>
+    <div class="log-section">
+        <div class="log-section-title">Progress</div>
+        {phase_bar}
+    </div>
+    <div class="log-header">
+        <div class="log-stat"><div class="label">Phase</div><div class="value"><span class="badge" style="background:{phase_color}20;color:{phase_color}">{_esc(project.phase)}</span></div></div>
+        <div class="log-stat"><div class="label">Confidence</div><div class="value">{project.confidence}%</div></div>
+        <div class="log-stat"><div class="label">Sessions</div><div class="value">{project.total_sessions}</div></div>
+        <div class="log-stat"><div class="label">TODO</div><div class="value">{project.todo_completed}/{project.todo_completed + project.todo_pending}</div></div>
+        <div class="log-stat"><div class="label">Last Updated</div><div class="value" style="font-size:13px">{_esc(project.last_updated or '-')}</div></div>
+    </div>
+    <div class="log-section">
+        <div class="log-section-title">Next Action</div>
+        <p>{_esc(project.next_action or 'Not specified')}</p>
+    </div>
+    <div class="log-section">
+        <div class="log-section-title">Recent Sessions</div>
+        {session_list}
+    </div>
+</div>
+</div>"""
+    return _page(f"Research - {project.topic}", body)
+
+
+def render_research_solution(
+    dates: list[str],
+    slug: str,
+    topic: str,
+    html_content: str,
+    date_counts: dict[str, int] | None = None,
+) -> str:
+    """Render the solution document"""
+    body = f"""
+<div class="layout">
+{_sidebar(dates, active_nav="research", date_counts=date_counts)}
+<div class="main">
+    <div class="header"><h1>Solution: {_esc(topic)}</h1></div>
+    <div class="action-bar">
+        <a href="/research/{slug}" class="back-link">&larr; Project</a>
+        <a href="/research/{slug}/checklist" class="action-btn">Checklist</a>
+    </div>
+    <div class="report-content">{html_content}</div>
+</div>
+</div>"""
+    return _page(f"Solution - {topic}", body)
+
+
+def render_research_checklist(
+    dates: list[str],
+    slug: str,
+    topic: str,
+    html_content: str,
+    date_counts: dict[str, int] | None = None,
+) -> str:
+    """Render the verification checklist"""
+    body = f"""
+<div class="layout">
+{_sidebar(dates, active_nav="research", date_counts=date_counts)}
+<div class="main">
+    <div class="header"><h1>Checklist: {_esc(topic)}</h1></div>
+    <div class="action-bar">
+        <a href="/research/{slug}" class="back-link">&larr; Project</a>
+        <a href="/research/{slug}/solution" class="action-btn">Solution</a>
+    </div>
+    <div class="report-content">{html_content}</div>
+</div>
+</div>"""
+    return _page(f"Checklist - {topic}", body)
+
+
+def render_research_todo(
+    dates: list[str],
+    slug: str,
+    topic: str,
+    html_content: str,
+    date_counts: dict[str, int] | None = None,
+) -> str:
+    """Render the research TODO page"""
+    body = f"""
+<div class="layout">
+{_sidebar(dates, active_nav="research", date_counts=date_counts)}
+<div class="main">
+    <div class="header"><h1>Research TODO: {_esc(topic)}</h1></div>
+    <div class="action-bar">
+        <a href="/research/{slug}" class="back-link">&larr; Project</a>
+        <a href="/research/{slug}/solution" class="action-btn">Solution</a>
+        <a href="/research/{slug}/checklist" class="action-btn">Checklist</a>
+    </div>
+    <div class="report-content">{html_content}</div>
+</div>
+</div>"""
+    return _page(f"TODO - {topic}", body)
+
+
+def render_research_sessions(
+    dates: list[str],
+    slug: str,
+    topic: str,
+    sessions: list,
+    date_counts: dict[str, int] | None = None,
+) -> str:
+    """Render the session list page"""
+    if not sessions:
+        session_html = '<div class="empty-state"><p>No sessions yet</p></div>'
+    else:
+        rows = ""
+        for s in sessions:
+            rows += f"""
+<tr>
+    <td><a href="/research/{slug}/sessions/{s.filename}">{_esc(s.timestamp)}</a></td>
+    <td>{s.filename}</td>
+</tr>"""
+        session_html = f"""
+<table class="history-table">
+    <tr><th>Timestamp</th><th>File</th></tr>
+    {rows}
+</table>"""
+
+    body = f"""
+<div class="layout">
+{_sidebar(dates, active_nav="research", date_counts=date_counts)}
+<div class="main">
+    <div class="header"><h1>Sessions: {_esc(topic)}</h1></div>
+    <div class="action-bar">
+        <a href="/research/{slug}" class="back-link">&larr; Project</a>
+    </div>
+    <div class="log-section">
+        <div class="log-section-title">Session History</div>
+        {session_html}
+    </div>
+</div>
+</div>"""
+    return _page(f"Sessions - {topic}", body)
+
+
+def render_research_new(
+    dates: list[str],
+    date_counts: dict[str, int] | None = None,
+) -> str:
+    """Render the new research project form"""
+    body = f"""
+<div class="layout">
+{_sidebar(dates, active_nav="research", date_counts=date_counts)}
+<div class="main">
+    <div class="header">
+        <h1>New Research Project</h1>
+    </div>
+    <div class="action-bar">
+        <a href="/research" class="back-link">&larr; All Projects</a>
+    </div>
+    <div class="log-section">
+        <div class="log-section-title">Create Project</div>
+        <form id="new-research-form" onsubmit="submitResearch(event)" style="max-width:600px">
+            <div style="margin-bottom:16px">
+                <label style="display:block;font-size:13px;font-weight:600;color:var(--muted);margin-bottom:6px">Research Topic</label>
+                <textarea id="research-topic" name="topic" rows="3" required
+                    style="width:100%;padding:12px;border:1px solid var(--border);border-radius:8px;font-size:14px;background:var(--surface);color:var(--text);resize:vertical;font-family:inherit"
+                    placeholder="Describe the research question or topic to investigate..."></textarea>
+            </div>
+            <div style="margin-bottom:16px">
+                <label style="display:block;font-size:13px;font-weight:600;color:var(--muted);margin-bottom:6px">Depth Level</label>
+                <select name="max_depth" style="width:200px;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;background:var(--surface);color:var(--text)">
+                    <option value="1">1 - Quick overview</option>
+                    <option value="2">2 - Standard</option>
+                    <option value="3" selected>3 - Thorough</option>
+                    <option value="4">4 - Deep dive</option>
+                    <option value="5">5 - Exhaustive</option>
+                </select>
+            </div>
+            <button type="submit" class="run-btn" style="padding:10px 24px">Create Project</button>
+            <span id="create-result" style="margin-left:12px;font-size:13px;color:var(--muted)"></span>
+        </form>
+    </div>
+</div>
+</div>"""
+    return _page("New Research", body)

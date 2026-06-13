@@ -54,3 +54,27 @@ tasks:
     parameters:
       topic: "agent"
       max_repos: 10
+
+  # MSS SOP 执行示例 (需配置 config/mss_auth.yaml 后启用)
+  # mss_handle_alert:
+  #   skill: mss_sop
+  #   description: "执行告警处理 SOP"
+  #   enabled: false
+  #   max_turns: 100
+  #   parameters:
+  #     sop_name: "handle_alert"
+  #     params:
+  #       alert_id: ""        # 执行时填入
+  #       operator_id: "agent"
+
+  # 深度研究示例 (通过 /research 页面创建项目，或取消注释启用)
+  # rag_agent_research:
+  #   skill: deep_research
+  #   type: research
+  #   description: "研究如何构建生产级 RAG Agent 系统"
+  #   enabled: false
+  #   max_turns: 200
+  #   parameters:
+  #     project: "rag-agent-production"
+  #     topic: "How to build a production-grade RAG agent system"
+  #     max_depth: 3
