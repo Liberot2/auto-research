@@ -78,13 +78,6 @@ def create_app(
 
     register_routes(app)
 
-    # MSS SOP management routes (optional)
-    try:
-        from src.web.mss_handlers import register_mss_routes
-        register_mss_routes(app)
-    except ImportError:
-        logger.debug("MSS module not available")
-
     # Research project routes (optional)
     try:
         from src.web.research_handlers import register_research_routes

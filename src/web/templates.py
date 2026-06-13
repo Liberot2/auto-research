@@ -1118,7 +1118,6 @@ def _sidebar(
         ("compare", "Compare", "/compare"),
         ("bookmarks", "Bookmarks", "/bookmarks"),
         ("ask", "Semantic Search", "/ask"),
-        ("mss_sops", "MSS SOPs", "/mss/sops"),
     ]
     nav_links = []
     for key, label, href in nav_items:
