@@ -1,0 +1,61 @@
+version: "3.8"
+
+services:
+  umami-db:
+    image: postgres:16-alpine
+    container_name: umami-db
+    environment:
+      POSTGRES_DB: umami
+      POSTGRES_USER: umami
+      POSTGRES_PASSWORD: umami123
+    volumes:
+      - umami-db-data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U umami"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  umami:
+    image: umami/umami:postgresql-latest
+    container_name: umami
+    depends_on:
+      umami-db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://umami:umami123@umami-db:5432/umami
+      DATABASE_TYPE: postgresql
+      APP_SECRET: a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6
+    ports:
+      - "3100:3000"
+    restart: unless-stopped
+
+  # Event receiver for RRWeb events
+  event-receiver:
+    build: ./event-receiver
+    container_name: rrweb-receiver
+    ports:
+      - "3101:3000"
+    environment:
+      STORAGE_DIR: /data/events
+    volumes:
+      - event-data:/data/events
+    restart: unless-stopped
+
+  # Demo app served via nginx
+  demo-app:
+    image: nginx:alpine
+    container_name: demo-app
+    ports:
+      - "8080:80"
+    volumes:
+      - ./demo:/usr/share/nginx/html:ro
+    depends_on:
+      - event-receiver
+    restart: unless-stopped
+
+volumes:
+  umami-db-data:
+  event-data:
