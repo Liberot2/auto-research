@@ -3,14 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Umami + RRWeb Tracking Demo</title>
-  <!-- Umami tracking script — replace WEBSITE_ID after setup -->
+  <title>Umami Tracking Demo — Single System</title>
+  <!-- Umami tracking script — pageview + event tracking -->
   <script async defer
-    data-website-id="DEMO_WEBSITE_ID"
+    data-website-id="681699f8-ede7-4e16-a6a7-657b835315a4"
+    data-host-url="http://localhost:3100"
     src="http://localhost:3100/script.js">
   </script>
-  <!-- RRWeb recording — local bundle -->
-  <script src="rrweb.min.js"></script>
+  <!-- Umami session replay recorder (built-in RRWeb) -->
+  <script async defer src="http://localhost:3100/recorder.js"></script>
+  <!-- A11y enhancer — injects semantic context via umami.track() -->
+  <script src="a11y-enhancer.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: system-ui, -apple-system, sans-serif; background: #f5f5f5; color: #333; }
@@ -45,9 +48,6 @@
     .dot { width: 8px; height: 8px; border-radius: 50%; background: #10b981; display: inline-block; }
     .dot.recording { animation: pulse 1s infinite; }
     @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-
-    /* Hidden panel for visibility testing */
-    #panel-hidden { display: none; }
   </style>
 </head>
 <body>
@@ -147,348 +147,53 @@
     </div>
   </main>
 
-  <!-- Status bar -->
+  <!-- Status bar — single system, dual data layer -->
   <div id="status-bar">
-    <span><span class="dot recording" id="rec-dot"></span> Recording</span>
-    <span id="event-count">Events: 0</span>
-    <span id="action-count">Actions: 0</span>
+    <span><span class="dot recording" id="rec-dot"></span> Umami Recording</span>
+    <span id="umami-status" style="color: #fbbf24;">Umami: connecting...</span>
+    <span id="a11y-count">A11y Actions: 0</span>
     <span id="session-id"></span>
   </div>
 
   <script>
     // ========================================
-    // A11y Capture — from research solution
+    // Umami status + custom event tracking
     // ========================================
 
-    function captureA11yContext(node) {
-      if (!node || node.nodeType !== 1) return null;
-      return {
-        role: node.getAttribute('role') || inferRole(node),
-        name: extractName(node),
-        states: extractStates(node),
-        actionable: isActionable(node),
-        context: extractParentContext(node),
-      };
-    }
-
-    function inferRole(el) {
-      const tag = el.tagName.toLowerCase();
-      const roleMap = {
-        button: 'button', a: 'link',
-        input: inferInputRole(el), select: 'listbox',
-        option: 'option', textarea: 'textbox',
-        h1: 'heading', h2: 'heading', h3: 'heading',
-        ul: 'list', ol: 'list', li: 'listitem',
-        nav: 'navigation', main: 'main', header: 'banner',
-        footer: 'contentinfo', form: 'form', table: 'table',
-        img: 'img', dialog: 'dialog', summary: 'summary',
-        details: 'group',
-      };
-      return roleMap[tag] || 'generic';
-    }
-
-    function inferInputRole(el) {
-      const type = (el.type || 'text').toLowerCase();
-      const typeMap = {
-        text: 'textbox', email: 'textbox', tel: 'textbox',
-        password: 'textbox', search: 'textbox', url: 'textbox',
-        number: 'spinbutton', checkbox: 'checkbox', radio: 'radio',
-        range: 'slider', color: 'textbox', date: 'textbox',
-        'datetime-local': 'textbox', time: 'textbox', month: 'textbox',
-        week: 'textbox', file: 'textbox', submit: 'button',
-        button: 'button', reset: 'button', image: 'button',
-        hidden: 'textbox',
-      };
-      return typeMap[type] || 'textbox';
-    }
-
-    function extractName(el) {
-      // 1. aria-label
-      const ariaLabel = el.getAttribute('aria-label');
-      if (ariaLabel && ariaLabel.trim()) return ariaLabel.trim().slice(0, 100);
-
-      // 2. aria-labelledby
-      const labelledby = el.getAttribute('aria-labelledby');
-      if (labelledby) {
-        const labelEl = document.getElementById(labelledby);
-        if (labelEl) {
-          const text = labelEl.textContent.trim();
-          if (text) return text.slice(0, 100);
-        }
-      }
-
-      // 3. label[for]
-      if (el.id) {
-        const labelFor = document.querySelector(`label[for="${el.id}"]`);
-        if (labelFor) {
-          const text = labelFor.textContent.trim();
-          if (text) return text.slice(0, 100);
-        }
-      }
-
-      // 4. textContent for interactive elements
-      const role = el.getAttribute('role') || inferRole(el);
-      if (['button', 'link', 'heading', 'option', 'listitem', 'summary', 'tab', 'menuitem'].includes(role)) {
-        const text = el.textContent.trim();
-        if (text) return text.slice(0, 100);
-      }
-
-      // 5. placeholder
-      const placeholder = el.getAttribute('placeholder');
-      if (placeholder) return placeholder.slice(0, 100);
-
-      // 6. alt
-      const alt = el.getAttribute('alt');
-      if (alt) return alt.slice(0, 100);
-
-      // 7. title
-      const title = el.getAttribute('title');
-      if (title) return title.slice(0, 100);
-
-      return null;
-    }
-
-    function extractStates(el) {
-      const states = {};
-      for (const attr of ['aria-checked', 'aria-expanded', 'aria-selected',
-                           'aria-pressed', 'aria-disabled', 'aria-hidden']) {
-        const val = el.getAttribute(attr);
-        if (val !== null) states[attr.replace('aria-', '')] = val;
-      }
-      if (el.disabled) states.disabled = true;
-      if (el.matches(':focus')) states.focused = true;
-      if (el.hasAttribute('hidden')) states.hidden = true;
-      if (el.checked) states.checked = 'true';
-      return states;
-    }
-
-    function isActionable(el) {
-      return el.matches(
-        'a, button, input, select, textarea, [role="button"], [role="link"], ' +
-        '[role="textbox"], [role="checkbox"], [role="tab"], [role="option"], ' +
-        '[role="menuitem"], [tabindex]:not([tabindex="-1"])'
-      );
-    }
-
-    function extractParentContext(el) {
-      const semantic = el.closest(
-        '[role="navigation"], [role="main"], [role="dialog"], [role="tabpanel"], ' +
-        '[role="tablist"], [role="form"], nav, main, aside, section, article, form, fieldset'
-      );
-      return semantic ? {
-        role: semantic.getAttribute('role') || semantic.tagName.toLowerCase(),
-        label: semantic.getAttribute('aria-label')
-          || semantic.querySelector('h1,h2,h3')?.textContent?.trim()?.slice(0, 50)
-          || null,
-      } : null;
-    }
-
-    // Privacy sanitization
-    const SENSITIVE_SELECTORS = [
-      'input[type="password"]',
-      'input[name*="credit"]', 'input[name*="card"]',
-      'input[name*="ssn"]', 'input[name*="id-number"]',
-    ];
-    const PII_SELECTORS = {
-      'input[type="email"]': '{email}',
-      'input[type="tel"]': '{phone}',
-      'input[name*="name"]': '{name}',
-      'input[name*="address"]': '{address}',
-    };
-
-    function sanitizeValue(el, value) {
-      if (!value) return value;
-      try {
-        if (el.matches(SENSITIVE_SELECTORS.join(','))) return '[REDACTED]';
-        for (const [sel, replacement] of Object.entries(PII_SELECTORS)) {
-          if (el.matches(sel)) return replacement;
-        }
-      } catch (e) {}
-      return value;
-    }
-
-    // ========================================
-    // RRWeb recording with A11y enhancement
-    // ========================================
-
-    const SESSION_ID = crypto.randomUUID();
-    document.getElementById('session-id').textContent = `Session: ${SESSION_ID.slice(0, 8)}`;
-
-    let eventCount = 0;
-    let actionCount = 0;
-    let eventBuffer = [];
-    let flushTimer = null;
-
-    const RECEIVER_URL = 'http://localhost:3101';
-
-    // Capture-phase listeners: record the actual DOM element for interactions
-    // This avoids relying on rrweb's internal node IDs
-    let lastInteraction = null;
-
-    document.addEventListener('click', (e) => {
-      lastInteraction = { type: 'click', element: e.target, ts: Date.now() };
-    }, true);
-
-    document.addEventListener('input', (e) => {
-      lastInteraction = { type: 'input', element: e.target, ts: Date.now() };
-    }, true);
-
-    document.addEventListener('change', (e) => {
-      lastInteraction = { type: 'change', element: e.target, ts: Date.now() };
-    }, true);
-
-    // Match interaction within 50ms of rrweb event
-    function getRecentInteraction(eventTs) {
-      if (!lastInteraction) return null;
-      if (Math.abs(eventTs - lastInteraction.ts) < 100) {
-        return lastInteraction;
-      }
-      return null;
-    }
-
-    // Start recording
-    if (typeof rrweb === 'undefined' || typeof rrweb.record !== 'function') {
-      console.error('RRWeb not loaded. Check CDN.');
-      document.getElementById('rec-dot').style.background = '#ef4444';
-    } else {
-      let uiUpdatePending = false;
-
-      function updateUI() {
-        uiUpdatePending = false;
-        // Use requestAnimationFrame to avoid blocking
-        const ec = document.getElementById('event-count');
-        const ac = document.getElementById('action-count');
-        if (ec) ec.textContent = `Events: ${eventCount}`;
-        if (ac) ac.textContent = `Actions: ${actionCount}`;
-      }
-
-      const stopFn = rrweb.record({
-        emit(event) {
-          eventCount++;
-
-          // For interaction events, inject A11y context
-          if (event.type === 3 && event.data) {
-            const source = event.data.source;
-
-            // Mouse interaction (click, etc.)
-            if (source === 2) {
-              const recent = getRecentInteraction(event.timestamp);
-              if (recent && recent.element) {
-                event._a11y = captureA11yContext(recent.element);
-                if (event._a11y?.actionable) {
-                  actionCount++;
-                }
-              }
-            }
-
-            // Input interaction — use active element for input events
-            if (source === 5) {
-              const recent = getRecentInteraction(event.timestamp);
-              const el = recent?.element || document.activeElement;
-              if (el && el !== document.body) {
-                const a11y = captureA11yContext(el);
-                // Sanitize input values for privacy
-                if (event.data.text !== undefined) {
-                  event.data.text = sanitizeValue(el, event.data.text);
-                }
-                event._a11y = a11y;
-              }
-            }
-          }
-
-          // Buffer events and flush periodically
-          eventBuffer.push(event);
-
-          // Tag first event with sessionId
-          if (eventBuffer.length === 1) {
-            event.sessionId = SESSION_ID;
-          }
-
-          // Defer UI updates to avoid DOM mutation feedback loop
-          if (!uiUpdatePending) {
-            uiUpdatePending = true;
-            requestAnimationFrame(updateUI);
-          }
-
-          // Flush every 2 seconds or 50 events
-          if (eventBuffer.length >= 50 || !flushTimer) {
-            if (!flushTimer) {
-              flushTimer = setTimeout(flushEvents, 2000);
-            }
-          }
-          if (eventBuffer.length >= 50) {
-            clearTimeout(flushTimer);
-            flushTimer = null;
-            flushEvents();
-          }
-        },
-      });
-    }
-
-    async function flushEvents() {
-      flushTimer = null;
-      if (eventBuffer.length === 0) return;
-
-      const batch = eventBuffer.splice(0);
-      try {
-        await fetch(`${RECEIVER_URL}/api/events`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ sessionId: SESSION_ID, events: batch }),
-        });
-      } catch (e) {
-        // Re-buffer on failure (limit to prevent memory leak)
-        if (eventBuffer.length < 500) {
-          eventBuffer.unshift(...batch);
-        }
+    function checkUmamiReady() {
+      var status = document.getElementById('umami-status');
+      if (typeof umami !== 'undefined' && umami.track) {
+        status.textContent = 'Umami: active';
+        status.style.color = '#10b981';
+      } else {
+        setTimeout(checkUmamiReady, 500);
       }
     }
+    setTimeout(checkUmamiReady, 300);
 
-    // Flush on page unload
-    window.addEventListener('beforeunload', () => {
-      flushEvents();
+    // Display A11y session ID
+    document.addEventListener('DOMContentLoaded', function() {
+      var sid = (window.A11yEnhancer) ? A11yEnhancer.getSessionId() : 'N/A';
+      document.getElementById('session-id').textContent = 'A11y: ' + sid.slice(0, 8);
     });
 
-    // ========================================
-    // Tab logic
-    // ========================================
-    const tabs = document.querySelectorAll('[role="tab"]');
-    tabs.forEach((tab) => {
-      tab.addEventListener('click', () => {
-        tabs.forEach((t) => {
-          t.setAttribute('aria-selected', 'false');
-          t.setAttribute('tabindex', '-1');
-        });
-        tab.setAttribute('aria-selected', 'true');
-        tab.removeAttribute('tabindex');
-
-        document.querySelectorAll('[role="tabpanel"]').forEach((p) => {
-          p.hidden = true;
-        });
-        const panel = document.getElementById(tab.getAttribute('aria-controls'));
-        if (panel) panel.hidden = false;
-      });
-    });
-
-    // ========================================
-    // Umami custom event tracking
-    // ========================================
-    function trackAction(action, details = {}) {
+    function trackAction(action, details) {
+      details = details || {};
       if (typeof umami !== 'undefined') {
-        umami.track(action, { ...details, path: window.location.pathname, sessionId: SESSION_ID });
+        umami.track(action, details);
+        console.log('[Umami] tracked:', action);
       }
-      console.log('[track]', action, details);
     }
 
     function doSearch() {
-      const query = document.getElementById('search-input').value;
-      trackAction('search', { query, results: Math.floor(Math.random() * 20) + 1 });
+      var query = document.getElementById('search-input').value;
+      trackAction('search', { query: query, results: Math.floor(Math.random() * 20) + 1 });
     }
 
     function doExport() {
-      const format = document.getElementById('format-select').value;
-      const includeCharts = document.getElementById('include-charts').checked;
-      trackAction('export', { format, includeCharts });
+      var format = document.getElementById('format-select').value;
+      var includeCharts = document.getElementById('include-charts').checked;
+      trackAction('export', { format: format, includeCharts: includeCharts });
       document.getElementById('dialog-test').hidden = false;
     }
 
@@ -503,6 +208,27 @@
     function cancelSettings() {
       trackAction('settings-cancel', {});
     }
+
+    // ========================================
+    // Tab logic
+    // ========================================
+    var tabs = document.querySelectorAll('[role="tab"]');
+    tabs.forEach(function(tab) {
+      tab.addEventListener('click', function() {
+        tabs.forEach(function(t) {
+          t.setAttribute('aria-selected', 'false');
+          t.setAttribute('tabindex', '-1');
+        });
+        tab.setAttribute('aria-selected', 'true');
+        tab.removeAttribute('tabindex');
+
+        document.querySelectorAll('[role="tabpanel"]').forEach(function(p) {
+          p.hidden = true;
+        });
+        var panel = document.getElementById(tab.getAttribute('aria-controls'));
+        if (panel) panel.hidden = false;
+      });
+    });
   </script>
 </body>
 </html>
