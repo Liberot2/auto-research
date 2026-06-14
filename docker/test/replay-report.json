@@ -1,0 +1,81 @@
+{
+  "session": "c1e029c9-169b-5b63-aa85-726f22ac5bf2",
+  "url": "http://localhost:8080",
+  "results": [
+    {
+      "step": 1,
+      "label": "[1/12] click r:textbox n:\"Search reports\" s:{focused:true} ctx:tabpanel(\"Search\")",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "step": 2,
+      "label": "[2/12] input r:textbox n:\"Search reports\" s:{focused:true} ctx:tabpanel(\"Search\")  v:\"1\"",
+      "status": "PASS",
+      "detail": "filled=\"1\""
+    },
+    {
+      "step": 3,
+      "label": "[3/12] input r:textbox n:\"Search reports\" s:{focused:true} ctx:tabpanel(\"Search\")  v:\"1111\"",
+      "status": "PASS",
+      "detail": "filled=\"1111\""
+    },
+    {
+      "step": 4,
+      "label": "[4/12] click r:button n:\"Search\" s:{focused:true} ctx:tabpanel(\"Search\")",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "step": 5,
+      "label": "[5/12] click r:tabpanel n:\"Overview\" ctx:tabpanel(\"Search\")",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "step": 6,
+      "label": "[6/12] input r:textbox n:\"Search reports\" s:{focused:true} ctx:tabpanel(\"Search\")  v:\"2\"",
+      "status": "PASS",
+      "detail": "filled=\"2\""
+    },
+    {
+      "step": 7,
+      "label": "[7/12] input r:textbox n:\"Search reports\" s:{focused:true} ctx:tabpanel(\"Search\")  v:\"222\"",
+      "status": "PASS",
+      "detail": "filled=\"222\""
+    },
+    {
+      "step": 8,
+      "label": "[8/12] click r:button n:\"Search\" s:{focused:true} ctx:tabpanel(\"Search\")",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "step": 9,
+      "label": "[9/12] click r:tabpanel n:\"Overview\" ctx:tabpanel(\"Search\")",
+      "status": "PASS",
+      "detail": ""
+    },
+    {
+      "step": 10,
+      "label": "[10/12] input r:textbox n:\"Search reports\" s:{focused:true} ctx:tabpanel(\"Search\")  v:\"3\"",
+      "status": "PASS",
+      "detail": "filled=\"3\""
+    },
+    {
+      "step": 11,
+      "label": "[11/12] input r:textbox n:\"Search reports\" s:{focused:true} ctx:tabpanel(\"Search\")  v:\"3333\"",
+      "status": "PASS",
+      "detail": "filled=\"3333\""
+    },
+    {
+      "step": 12,
+      "label": "[12/12] click r:button n:\"Search\" s:{focused:true} ctx:tabpanel(\"Search\")",
+      "status": "PASS",
+      "detail": ""
+    }
+  ],
+  "passed": 12,
+  "failed": 0,
+  "skipped": 0
+}

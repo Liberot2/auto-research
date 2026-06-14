@@ -41,7 +41,6 @@ data/
 
 # Local config
 config/windows_tasks/
-config/mss_auth.yaml
 .env
 .env.local
 
@@ -57,9 +56,6 @@ package-lock.json
 .claude/helpers/
 .claude/settings.json
 .claude/settings.local.json.tmp.*
-.claude/skills/mss-*/
-!.claude/skills/mss-capture/
-!.claude/skills/mss-sop/
 .mcp.json
 
 # CC-connect

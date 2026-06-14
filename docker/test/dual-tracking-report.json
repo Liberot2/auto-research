@@ -1,0 +1,78 @@
+{
+  "timestamp": "2026-06-13T17:18:04.832Z",
+  "umami": {
+    "pageviewsBefore": 4,
+    "pageviewsAfter": 4,
+    "newPageviews": 0,
+    "eventMetrics": [
+      {
+        "x": "export",
+        "y": 5
+      },
+      {
+        "x": "search",
+        "y": 5
+      },
+      {
+        "x": "pageview",
+        "y": 4
+      },
+      {
+        "x": "settings-save",
+        "y": 4
+      }
+    ],
+    "consoleLogs": [
+      "[Umami] tracked: search",
+      "[Umami] tracked: export",
+      "[Umami] tracked: settings-save"
+    ]
+  },
+  "rrweb": {
+    "sessionId": "de2a0a4f-3e75-4bdc-aaa1-459d4a741ef6",
+    "eventCount": 2450,
+    "actionCount": 31,
+    "toonLines": 31,
+    "summaryLength": 1013,
+    "sampleToon": []
+  },
+  "checks": [
+    {
+      "name": "Umami pageview tracked",
+      "passed": true,
+      "detail": "4 total (baseline 4)"
+    },
+    {
+      "name": "Umami custom events tracked",
+      "passed": true,
+      "detail": "5 search, 5 export, 4 settings-save"
+    },
+    {
+      "name": "Umami script loaded",
+      "passed": true,
+      "detail": "script active in browser"
+    },
+    {
+      "name": "RRWeb events recorded",
+      "passed": true,
+      "detail": "2450 events"
+    },
+    {
+      "name": "RRWeb TOON format generated",
+      "passed": true,
+      "detail": "31 lines"
+    },
+    {
+      "name": "Both layers active simultaneously",
+      "passed": true,
+      "detail": "Umami + RRWeb both captured data"
+    },
+    {
+      "name": "RRWeb A11y actions captured",
+      "passed": true,
+      "detail": "31 actions, 31 TOON lines"
+    }
+  ],
+  "passed": 7,
+  "total": 7
+}

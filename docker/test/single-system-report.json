@@ -1,0 +1,90 @@
+{
+  "timestamp": "2026-06-14T05:29:48.279Z",
+  "architecture": "single-system (Umami only)",
+  "umami": {
+    "eventMetrics": [
+      {
+        "x": "a11y-action",
+        "y": 20
+      },
+      {
+        "x": "export",
+        "y": 8
+      },
+      {
+        "x": "search",
+        "y": 8
+      },
+      {
+        "x": "settings-save",
+        "y": 5
+      },
+      {
+        "x": "pageview",
+        "y": 4
+      }
+    ],
+    "a11yActions": 20,
+    "replays": 0
+  },
+  "browser": {
+    "umamiStatus": "Umami: active",
+    "a11yCount": "A11y Actions: 20",
+    "sessionId": "A11y: 52cad519",
+    "consoleLogs": {
+      "a11y": 21,
+      "umami": 3
+    },
+    "sampleA11yLogs": [
+      "[A11y] Enhancer initialized. Session: 52cad519",
+      "[A11y] click r:textbox n:\"Search reports\" s:{focused:true} ctx:tabpanel(\"Search\")",
+      "[A11y] input r:textbox n:\"Search reports\" s:{focused:true} ctx:tabpanel(\"Search\")",
+      "[A11y] change r:textbox n:\"Search reports\" ctx:tabpanel(\"Search\")",
+      "[A11y] click r:button n:\"Search\" s:{focused:true} ctx:tabpanel(\"Search\")",
+      "[A11y] click r:tab n:\"Export\" s:{selected:false,focused:true} ctx:tablist(\"Dashboard tabs\")",
+      "[A11y] click r:checkbox s:{focused:true,checked:true} ctx:tabpanel(\"Export Options\")",
+      "[A11y] input r:checkbox s:{focused:true,checked:true} ctx:tabpanel(\"Export Options\")",
+      "[A11y] change r:checkbox s:{focused:true,checked:true} ctx:tabpanel(\"Export Options\")",
+      "[A11y] click r:button n:\"Export Report\" s:{focused:true} ctx:tabpanel(\"Export Options\")"
+    ]
+  },
+  "checks": [
+    {
+      "name": "Umami pageview/event tracking",
+      "passed": true,
+      "detail": "search events increased"
+    },
+    {
+      "name": "A11y enhanced events captured",
+      "passed": true,
+      "detail": "20 new a11y-action events"
+    },
+    {
+      "name": "Custom events (search/export/settings)",
+      "passed": true,
+      "detail": "8+8+5"
+    },
+    {
+      "name": "Umami script active in browser",
+      "passed": true,
+      "detail": "Umami: active"
+    },
+    {
+      "name": "A11y enhancer loaded",
+      "passed": true,
+      "detail": "21 console logs"
+    },
+    {
+      "name": "No external RRWeb dependency",
+      "passed": true,
+      "detail": "only Umami scripts loaded"
+    },
+    {
+      "name": "Session replay data",
+      "passed": true,
+      "detail": "0 replays (may need more interactions)"
+    }
+  ],
+  "passed": 7,
+  "total": 7
+}
