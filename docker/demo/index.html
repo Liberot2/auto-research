@@ -48,9 +48,23 @@
     .dot { width: 8px; height: 8px; border-radius: 50%; background: #10b981; display: inline-block; }
     .dot.recording { animation: pulse 1s infinite; }
     @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+    /* Toast notifications */
+    #toast-container { position: fixed; top: 16px; right: 16px; z-index: 200; display: flex; flex-direction: column; gap: 8px; max-width: 400px; }
+    .toast { background: #1f2937; color: #e5e7eb; padding: 10px 16px; border-radius: 8px; font-size: 13px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); display: flex; align-items: start; gap: 8px; animation: toastIn 0.2s ease; border-left: 3px solid #10b981; }
+    .toast.info { border-left-color: #3b82f6; }
+    .toast.warn { border-left-color: #f59e0b; }
+    .toast.fade { animation: toastOut 0.3s ease forwards; }
+    .toast-icon { font-size: 16px; line-height: 1; margin-top: 1px; }
+    .toast-body { flex: 1; }
+    .toast-title { font-weight: 600; margin-bottom: 2px; }
+    .toast-desc { color: #9ca3af; font-size: 12px; font-family: monospace; }
+    @keyframes toastIn { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    @keyframes toastOut { to { transform: translateX(120%); opacity: 0; } }
   </style>
 </head>
 <body>
+  <div id="toast-container"></div>
   <nav role="navigation" aria-label="Main navigation">
     <span class="logo" role="heading" aria-level="1">Demo App</span>
     <a href="#dashboard" role="link">Dashboard</a>
@@ -157,6 +171,35 @@
 
   <script>
     // ========================================
+    // Toast notification system
+    // ========================================
+    function showToast(title, desc, type) {
+      type = type || 'info';
+      var icons = { info: '\u2139', success: '\u2713', warn: '\u26a0' };
+      var container = document.getElementById('toast-container');
+      var toast = document.createElement('div');
+      toast.className = 'toast ' + type;
+      toast.innerHTML = '<span class="toast-icon">' + (icons[type] || icons.info) + '</span>' +
+        '<div class="toast-body"><div class="toast-title">' + title + '</div>' +
+        (desc ? '<div class="toast-desc">' + desc + '</div>' : '') + '</div>';
+      container.appendChild(toast);
+      setTimeout(function() { toast.classList.add('fade'); setTimeout(function() { toast.remove(); }, 300); }, 2500);
+      // Keep max 5 toasts
+      while (container.children.length > 5) container.firstChild.remove();
+    }
+
+    // ========================================
+    // Global click listener — all actionable elements trigger toast
+    // ========================================
+    document.addEventListener('click', function(e) {
+      var el = e.target.closest('button, a, input[type="submit"], input[type="button"], [role="button"], [role="tab"], [role="link"]');
+      if (!el) return;
+      var label = el.getAttribute('aria-label') || el.textContent.trim() || el.id || el.tagName;
+      var role = el.getAttribute('role') || el.tagName.toLowerCase();
+      showToast('Clicked: ' + label.slice(0, 40), role + (el.id ? ' #' + el.id : ''), 'info');
+    }, false);
+
+    // ========================================
     // Umami status + custom event tracking
     // ========================================
 
@@ -188,12 +231,14 @@
     function doSearch() {
       var query = document.getElementById('search-input').value;
       trackAction('search', { query: query, results: Math.floor(Math.random() * 20) + 1 });
+      showToast('Search executed', 'Query: "' + query + '"', 'success');
     }
 
     function doExport() {
       var format = document.getElementById('format-select').value;
       var includeCharts = document.getElementById('include-charts').checked;
       trackAction('export', { format: format, includeCharts: includeCharts });
+      showToast('Export requested', 'Format: ' + format.toUpperCase() + (includeCharts ? ' +charts' : ''), 'success');
       document.getElementById('dialog-test').hidden = false;
     }
 
@@ -203,10 +248,12 @@
 
     function saveSettings() {
       trackAction('settings-save', { section: 'profile' });
+      showToast('Settings saved', 'Profile section', 'success');
     }
 
     function cancelSettings() {
       trackAction('settings-cancel', {});
+      showToast('Settings cancelled', '', 'warn');
     }
 
     // ========================================

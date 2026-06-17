@@ -1,0 +1,40 @@
+sops:
+- name: 搜索操作
+  context: Search
+  steps:
+  - action: input
+    role: textbox
+    name: Search reports
+  - action: click
+    role: button
+    name: Search
+- name: 导航切换
+  context: Dashboard tabs
+  steps:
+  - action: click
+    role: tab
+    name: Export
+- name: 导出报告
+  context: Export Options
+  steps:
+  - action: toggle
+    role: checkbox
+    name: Include charts
+  - action: change
+    role: listbox
+    name: Export format
+  - action: click
+    role: button
+    name: Export Report
+- name: 修改设置
+  context: User Settings
+  steps:
+  - action: input
+    role: textbox
+    name: Name
+  - action: input
+    role: textbox
+    name: Email
+  - action: click
+    role: button
+    name: Save Settings

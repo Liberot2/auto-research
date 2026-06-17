@@ -80,8 +80,8 @@
     // 3.5. Parent label (nested: <label><input type="checkbox">Text</label>)
     var parentLabel = el.closest('label');
     if (parentLabel && parentLabel !== el) {
-      var label_text = parentLabel.textContent.trim();
-      if (label_text) return label_text.slice(0, 100);
+      var labelText = parentLabel.textContent.trim();
+      if (labelText) return labelText.slice(0, 100);
     }
 
     var role = el.getAttribute('role') || inferRole(el);
@@ -133,9 +133,10 @@
     return semantic ? {
       role: semantic.getAttribute('role') || semantic.tagName.toLowerCase(),
       label: semantic.getAttribute('aria-label')
-        || (semantic.querySelector('h1,h2,h3') || {}).textContent
-        && (semantic.querySelector('h1,h2,h3').textContent.trim().slice(0, 50))
-        || null,
+        || (function() {
+            var h = semantic.querySelector('h1,h2,h3');
+            return h ? h.textContent.trim().slice(0, 50) : null;
+        })(),
     } : null;
   }
 
@@ -199,7 +200,14 @@
   }
 
   var actionCount = 0;
-  var inputBuffer = {}; // 防抖：同一元素短时间内多次 input 只发一次
+  var inputBuffer = {};
+  // Clean up expired debounce entries every 30s to prevent unbounded growth
+  setInterval(function() {
+    var now = Date.now();
+    Object.keys(inputBuffer).forEach(function(key) {
+      if (now - inputBuffer[key] > 5000) delete inputBuffer[key];
+    });
+  }, 30000);
 
   function trackA11yAction(eventType, element, extra) {
     var a11y = captureA11yContext(element);

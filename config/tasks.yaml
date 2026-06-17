@@ -66,3 +66,15 @@ tasks:
   #     project: "rag-agent-production"
   #     topic: "How to build a production-grade RAG agent system"
   #     max_depth: 3
+
+  # SOP 自动化系统研究
+  sop_automation_research:
+    skill: deep_research
+    type: research
+    description: "构建以 agent-browser 为执行引擎的 SOP 自动化提取、执行、验证完备系统"
+    enabled: false
+    max_turns: 200
+    parameters:
+      project: "sop-automation"
+      topic: "Building a complete SOP automation system with agent-browser as execution engine: extraction from tracking data, parameterized execution, and closed-loop verification"
+      max_depth: 3

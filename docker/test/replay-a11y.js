@@ -27,25 +27,28 @@ const TARGET_URL = URL_FLAG >= 0 ? args[URL_FLAG + 1] : 'http://localhost:8080';
 // 从 Umami PostgreSQL 读取事件
 // ========================================
 function fetchEvents(sessionId) {
-  const pyPath = 'e:/workspace/auto-research/docker/test/fetch_events.py'.replace(/\//g, '/');
-  const wslPath = '/mnt/' + pyPath.replace(':', '').replace(/\//g, '/');
-  const cmd = `wsl -d Ubuntu bash -c "python3 /mnt/e/workspace/auto-research/docker/test/fetch_events.py ${sessionId || ''}"`;
+  const path = require('path');
+  const scriptPath = path.join(__dirname, 'fetch_events.py');
+  const wslScriptPath = '/mnt/' + scriptPath.replace(':', '').replace(/\\/g, '/').toLowerCase();
+  // Sanitize sessionId to prevent command injection
+  const safeSession = sessionId ? sessionId.replace(/[^a-f0-9-]/gi, '') : '';
+  const cmd = `wsl -d Ubuntu bash -c "python3 ${wslScriptPath} ${safeSession}"`;
   const output = execSync(cmd, { encoding: 'utf-8', maxBuffer: 1024 * 1024 });
   const rawEvents = JSON.parse(output.trim());
 
+  // Normalize keys once at parse time (PostgreSQL lowercases unquoted aliases)
   return rawEvents.map(ev => ({
-    eventId: '',
-    createdAt: '',
-    eventType: ev.eventtype || ev.eventType || '',
+    eventType: ev.eventtype || '',
     role: ev.role || '',
     name: ev.name || '',
     toon: ev.toon || '',
-    sessionId: ev.sessionid || ev.sessionId || '',
+    sessionId: ev.sessionid || '',
     timestamp: parseInt(ev.timestamp) || 0,
-    context: { role: ev.contextrole || ev.contextRole || '', label: ev.contextlabel || ev.contextLabel || '' },
-    selectedText: ev.selectedtext || ev.selectedText || '',
-    inputValue: ev.inputvalue || ev.inputValue || '',
-    pageSessionId: ev.pagesessionid || ev.pageSessionId || '',
+    contextRole: ev.contextrole || '',
+    contextLabel: ev.contextlabel || '',
+    selectedText: ev.selectedtext || '',
+    inputValue: ev.inputvalue || '',
+    pageSessionId: ev.pagesessionid || '',
   }));
 }
 
@@ -92,10 +95,8 @@ function inferInputValue(name) {
   return 'replay-value';
 }
 
-function inferSelectOption(name) {
-  const n = (name || '').toLowerCase();
-  if (n.includes('format') || n.includes('export')) return 'csv';
-  return 'csv'; // default to CSV for demo
+function inferSelectOption() {
+  return 'csv';
 }
 
 // ========================================
@@ -183,7 +184,7 @@ async function replay(events, url, headed) {
   }
 
   // Take screenshot of final state
-  const screenshotPath = 'e:/workspace/auto-research/docker/test/replay-result.png';
+  const screenshotPath = require('path').join(__dirname, 'replay-result.png');
   await page.screenshot({ path: screenshotPath, fullPage: true });
   console.log(`\nScreenshot: ${screenshotPath}`);
 
@@ -223,7 +224,7 @@ async function replay(events, url, headed) {
   if (DRY_RUN) {
     console.log('=== Replay Plan (dry run) ===\n');
     cleanEvents.forEach((ev, i) => {
-      const value = ev.eventType === 'input' ? ` → fill("${inferInputValue(ev.name)}")` : '';
+      const value = ev.eventType === 'input' ? ` → fill("${ev.inputValue || inferInputValue(ev.name)}")` : '';
       console.log(`  ${i + 1}. ${ev.toon}${value}`);
     });
     console.log(`\nTotal: ${cleanEvents.length} actions ready for replay.`);
@@ -241,7 +242,7 @@ async function replay(events, url, headed) {
     // Save report
     const fs = require('fs');
     fs.writeFileSync(
-      'e:/workspace/auto-research/docker/test/replay-report.json',
+      require('path').join(__dirname, 'replay-report.json'),
       JSON.stringify({ session: targetSession, url: TARGET_URL, results, passed, failed, skipped }, null, 2)
     );
   }

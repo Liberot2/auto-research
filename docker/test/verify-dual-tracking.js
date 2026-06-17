@@ -236,7 +236,7 @@ async function getUmamiMetrics(token, type) {
       actionCount: rrSummaryActionCount,
       toonLines: rrToonLines,
       summaryLength: rrSummaryText.length,
-      sampleToon: rrSummaryText ? [] : [],
+      sampleToon: [],
     } : null,
     checks: checks.map(([name, ok, detail]) => ({ name, passed: ok, detail })),
     passed,
@@ -244,7 +244,7 @@ async function getUmamiMetrics(token, type) {
   };
 
   fs.writeFileSync(
-    'e:/workspace/auto-research/docker/test/dual-tracking-report.json',
+    require('path').join(__dirname, 'dual-tracking-report.json'),
     JSON.stringify(report, null, 2)
   );
   console.log('\nReport saved to docker/test/dual-tracking-report.json');

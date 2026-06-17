@@ -20,6 +20,8 @@ if not session_id:
         print("[]")
         sys.exit(0)
 
+# Sanitize session_id to prevent SQL injection
+session_id = session_id.replace("'", "''").replace(";", "")
 session_filter = (
     "AND we.event_id IN (SELECT website_event_id FROM event_data "
     "WHERE data_key = 'pageSessionId' AND string_value = '" + session_id + "')"

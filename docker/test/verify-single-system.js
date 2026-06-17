@@ -146,7 +146,7 @@ async function getReplays(token) {
   checks.push(['Umami script active in browser', umamiStatus.includes('active'), umamiStatus]);
   checks.push(['A11y enhancer loaded', a11yLogs.length > 0, `${a11yLogs.length} console logs`]);
   checks.push(['No external RRWeb dependency', true, 'only Umami scripts loaded']);
-  checks.push(['Session replay data', (replays.count || 0) > 0 || true, `${replays.count || 0} replays (may need more interactions)`]);
+  checks.push(['Session replay data', (replays.count || 0) > 0, `${replays.count || 0} replays`]);
 
   let passed = 0;
   for (const [name, ok, detail] of checks) {
@@ -175,7 +175,7 @@ async function getReplays(token) {
     passed, total: checks.length,
   };
   fs.writeFileSync(
-    'e:/workspace/auto-research/docker/test/single-system-report.json',
+    require('path').join(__dirname, 'single-system-report.json'),
     JSON.stringify(report, null, 2)
   );
   console.log('\nReport saved.');
