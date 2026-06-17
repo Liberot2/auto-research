@@ -10,6 +10,16 @@ from sanic import Sanic
 # Windows ProactorEventLoop supports subprocess creation (needed by claude_agent_sdk)
 if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
+    # Sanic's startup.setup_loop() would override our Proactor policy with
+    # WindowsSelectorEventLoopPolicy, but SelectorEventLoop cannot spawn
+    # subprocesses — required when /api/research/<slug>/advance runs the
+    # deep_research skill via claude_agent_sdk (anyio.open_process fails with
+    # NotImplementedError). Disable the override on both import sites.
+    import sanic.mixins.startup as _sanic_startup
+    import sanic.server.loop as _sanic_loop
+
+    _sanic_startup.try_windows_loop = lambda: None
+    _sanic_loop.try_windows_loop = lambda: None
 
 from src.web.handlers import register_routes
 from src.web.report_reader import ReportReader
